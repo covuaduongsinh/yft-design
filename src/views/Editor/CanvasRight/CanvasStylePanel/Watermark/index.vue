@@ -13,7 +13,7 @@
         
       </el-row >
       <!-- <div class="setting-item font-selector">
-        <span class="mr-10px">选择字体</span>
+        <span class="mr-10px">Chọn font</span>
         <Select class="w-320" v-model="waterMarkState.fontFamily" @on-change="changeFontFamily">
           <Option v-for="item in fontsList" :value="item.name" :key="`font-${item.name}`">
             <div class="font-item" v-if="!item.preview">{{ item.name }}</div>
@@ -61,8 +61,8 @@
         <span class="mr-10px">{{ t('waterMark.setting.angle') }}</span>
         <div>
           <el-radio-group v-model="waterMarkState.isRotate">
-            <el-radio :value="0">横向</el-radio>
-            <el-radio :value="1">倾斜</el-radio>
+            <el-radio :value="0">Ngang</el-radio>
+            <el-radio :value="1">Nghiêng</el-radio>
           </el-radio-group>
         </div>
       </div>
@@ -203,7 +203,7 @@ const drawWaterMark: Record<string, any> = {
 const addWaterMark = async () => {
   if (!waterMarkState.text) return ElMessage({
     type: 'warning',
-    message: '水印名称不能为空'
+    message: 'Tên hình mờ không được để trống'
   })
   const [ canvas ] = useCanvas()
   const workspace = canvas.getObjects().find((item: any) => item.id === WorkSpaceDrawType);

@@ -7,7 +7,7 @@
     <el-row class="thumb-handle items-center">
       <el-col :span="12" class="flex justify-center text-[16px]">
         <div>
-          <el-button text ref="menuRef">文件</el-button>
+          <el-button text ref="menuRef">Tệp</el-button>
           <HomePopover :menu-ref="menuRef" :menu-popover-ref="menuPopoverRef" />
         </div>
       </el-col>
@@ -71,44 +71,44 @@ const menuPopoverRef = ref();
 const contextmenusThumbnailItem = (): ContextMenu[] => {
   return [
     {
-      text: '剪切',
+      text: 'Cắt',
       subText: 'Ctrl + X',
       handler: cutTemplate,
     },
     {
-      text: '复制',
+      text: 'Sao chép',
       subText: 'Ctrl + C',
       // handler: copySlide,
     },
     {
-      text: '粘贴',
+      text: 'Dán',
       subText: 'Ctrl + V',
       handler: pasteTemplate,
     },
     {
-      text: '全选',
+      text: 'Chọn tất cả',
       subText: 'Ctrl + A',
       // handler: selectAllSlide,
     },
     { divider: true },
     {
-      text: '新建页面',
+      text: 'Tạo trang mới',
       subText: 'Enter',
       handler: createTemplate,
     },
     {
-      text: '复制页面',
+      text: 'Nhân bản trang',
       subText: 'Ctrl + D',
       // handler: copyAndPasteSlide,
     },
     {
-      text: '删除页面',
+      text: 'Xoá trang',
       subText: 'Delete',
       handler: () => deleteTemplate(),
     },
     { divider: true },
     {
-      text: '从当前预览',
+      text: 'Xem trước từ đây',
       subText: 'Shift + F5',
       // handler: enterScreening,
     },

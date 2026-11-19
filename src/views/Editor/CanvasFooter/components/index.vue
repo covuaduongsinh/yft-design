@@ -56,11 +56,11 @@ interface TabItem {
 }
 
 const tabs: TabItem[] = [
-  { key: 'image', label: '导出图片' },
-  { key: 'svg', label: '导出SVG' },
-  { key: 'pdf', label: '导出PDF' },
+  { key: 'image', label: 'Xuất ảnh' },
+  { key: 'svg', label: 'Xuất SVG' },
+  { key: 'pdf', label: 'Xuất PDF' },
   // { key: 'psd', label: '导出PSD' },
-  { key: 'json', label: '导出JSON' },
+  { key: 'json', label: 'Xuất JSON' },
 ]
 
 const currentDialogComponent = computed(() => {

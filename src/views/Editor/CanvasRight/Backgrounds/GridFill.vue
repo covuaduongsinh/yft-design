@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="self-footer">
-      <label class="self-lable">点击方块修改颜色</label>
+      <label class="self-lable">Nhấp vào ô để đổi màu</label>
       <div class="self-color">
         <div class="color-content">
           <div v-for="item in gridColorSelf" :key="item.index" :style="{backgroundColor: item.color}" class="color-item">
@@ -22,7 +22,7 @@
           <el-button class="ml-5" circle @click="subColor" v-if="gridColorSelf.length > 2"><IconMinus/></el-button>
         </div>
       </div>
-      <el-button class="btn close" round @click="saveColor()">保存色彩</el-button>
+      <el-button class="btn close" round @click="saveColor()">Lưu màu</el-button>
     </div>
   </el-dialog>
 </template>

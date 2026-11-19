@@ -1,15 +1,15 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="导入文件" width="35%" class="upload-dialog" :before-close="closeUpload">
+  <el-dialog v-model="dialogVisible" title="Nhập tệp" width="35%" class="upload-dialog" :before-close="closeUpload">
     <el-upload class="upload-demo" ref="uploadRef" :on-exceed="handleExceed" drag action="http" :http-request="uploadHandle" :limit="1" :accept="fileAccept" v-loading="uploading">
       <el-icon :size="50">
         <UploadFilled />
       </el-icon>
       <div class="el-upload__text">
-        拖拽文件到这里 或者 <em>选择文件上传</em>
+        Kéo tệp vào đây hoặc <em>chọn tệp để tải lên</em>
       </div>
       <template #tip>
         <div class="el-upload__tip">
-          支持 PSD / PDF / SVG / CDR 以及 图片 等格式
+          Hỗ trợ các định dạng PSD / PDF / SVG / CDR và ảnh
         </div>
       </template>
     </el-upload>

@@ -49,7 +49,7 @@ const getTemplateDetail = async (pk: number) => {
     catch (error) {
       ElMessage({
         type: 'error',
-        message: '模板加载失败,请联系管理员修改bug了',
+        message: 'Tải mẫu thất bại, vui lòng liên hệ quản trị viên',
       })
     }
   }

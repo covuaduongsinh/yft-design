@@ -30,7 +30,7 @@
       </div>
       
       <div class="element-handler">
-        <el-tooltip placement="top" :hide-after="0" :content="element.lockMovementX && element.lockMovementY ? '解锁' : '锁定'">
+        <el-tooltip placement="top" :hide-after="0" :content="element.lockMovementX && element.lockMovementY ? 'Mở khoá' : 'Khoá'">
           <IconLock class="common-icon" v-if="element.lockMovementX && element.lockMovementY" @click.stop="lockElement(element.id, false)"/>
           <IconUnlock class="common-icon" v-else @click.stop="lockElement(element.id, true)"/>
         </el-tooltip>

@@ -15,8 +15,8 @@ export const QRCodeStyleLibs = [
 ]
 
 export const BarCodeStyleLibs = [
-  {'name': 'CODE128', 'value': 'CODE128', index: 0, 'info': 'CODE 128是一种多功能条形码。它支持所有128个ASCII字符，但也有效地编码数字。它有三种模式（A/B/C），但可以随时在它们之间切换'},
-  {'name': 'EAN-13', 'value': 'EAN13', index: 1, 'info': 'EAN有多种形式，最常用的是EAN-13（GTIN-13），在世界范围内用于标识产品的身份'},
+  {'name': 'CODE128', 'value': 'CODE128', index: 0, 'info': 'CODE 128 là loại mã vạch đa năng. Hỗ trợ toàn bộ 128 ký tự ASCII và cũng mã hoá số rất hiệu quả. Có ba chế độ (A/B/C) và có thể chuyển đổi giữa chúng bất cứ lúc nào'},
+  {'name': 'EAN-13', 'value': 'EAN13', index: 1, 'info': 'EAN có nhiều dạng, phổ biến nhất là EAN-13 (GTIN-13), được dùng trên toàn thế giới để nhận diện sản phẩm'},
   {'name': 'EAN-8', 'value': 'EAN8', index: 2},
   {'name': 'EAN-5', 'value': 'EAN5', index: 3},
   {'name': 'EAN-2', 'value': 'EAN2', index: 4},

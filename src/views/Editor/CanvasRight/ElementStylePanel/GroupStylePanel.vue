@@ -4,7 +4,7 @@
     <el-divider style="margin: 12px 0" />
 
     <div class="row">
-      <div style="flex: 2;">填充颜色：</div>
+      <div style="flex: 2;">Màu tô:</div>
       <el-popover trigger="click" width="265">
         <template #reference>
           <ColorButton :color="fillColor" style="flex: 3;" />
@@ -16,14 +16,14 @@
     <el-divider style="margin: 12px 0" />
 
     <div class="row">
-      <div style="flex: 2;">边框样式：</div>
+      <div style="flex: 2;">Kiểu khung:</div>
       <el-select style="flex: 3;" v-model="outlineStyle" @change="changeOutlineStyle">
-        <el-option :value="0" label="实线边框"></el-option>
-        <el-option :value="1" label="虚线边框"></el-option>
+        <el-option :value="0" label="Khung nét liền"></el-option>
+        <el-option :value="1" label="Khung nét đứt"></el-option>
       </el-select>
     </div>
     <div class="row">
-      <div style="flex: 2;">边框颜色：</div>
+      <div style="flex: 2;">Màu khung:</div>
       <el-popover trigger="click" width="265">
         <template #reference>
           <ColorButton :color="outlineColor || '#000'" style="flex: 3;" />
@@ -32,7 +32,7 @@
       </el-popover>
     </div>
     <div class="row">
-      <div style="flex: 2;">边框粗细：</div>
+      <div style="flex: 2;">Độ dày khung:</div>
       <el-input-number style="flex: 3;" v-model="outlineWidth" @change="changeOutlineWidth"></el-input-number>
     </div>
 
@@ -59,7 +59,7 @@
       
       <el-row class="mt-10">
         <el-col :span="6">
-          <el-tooltip placement="top" content="文字颜色" :hide-after="0" >
+          <el-tooltip placement="top" content="Màu chữ" :hide-after="0" >
             <div @click.stop class="tooltip-popover">
               <el-popover trigger="click" placement="bottom" :width="265" @click.stop>
                 <template #reference>
@@ -75,7 +75,7 @@
           </el-tooltip>
         </el-col>
         <el-col :span="6">
-          <el-tooltip placement="top" content="文字高亮" :hide-after="0">
+          <el-tooltip placement="top" content="Tô sáng chữ" :hide-after="0">
             <div @click.stop class="tooltip-popover">
               <el-popover trigger="click" placement="bottom" :width="265">
                 <template #reference>
@@ -92,13 +92,13 @@
         </el-col>
         <el-col :span="12">
           <el-button-group class="full-group">
-            <el-tooltip placement="top" content="增大字号" :hide-after="0">
+            <el-tooltip placement="top" content="Tăng cỡ chữ" :hide-after="0">
               <el-button class="font-size" @click="handleElementFontsize('+')">
                 <IconFontSize />+
               </el-button>
             </el-tooltip>
 
-            <el-tooltip placement="top" content="减小字号" :hide-after="0">
+            <el-tooltip placement="top" content="Giảm cỡ chữ" :hide-after="0">
               <el-button @click="handleElementFontsize('-')">
                 <IconFontSize />-
               </el-button>
@@ -109,17 +109,17 @@
 
       <el-row class="mt-10">
         <el-radio-group class="full-ratio" >
-          <el-tooltip placement="top" content="左对齐" :hide-after="0">
+          <el-tooltip placement="top" content="Căn trái" :hide-after="0">
             <el-radio-button label="left">
               <IconAlignTextLeft />
             </el-radio-button>
           </el-tooltip>
-          <el-tooltip placement="top" content="居中" :hide-after="0">
+          <el-tooltip placement="top" content="Căn giữa" :hide-after="0">
             <el-radio-button label="center">
               <IconAlignTextCenter />
             </el-radio-button>
           </el-tooltip>
-          <el-tooltip placement="top" content="右对齐" :hide-after="0">
+          <el-tooltip placement="top" content="Căn phải" :hide-after="0">
             <el-radio-button label="right">
               <IconAlignTextRight />
             </el-radio-button>
@@ -186,11 +186,11 @@ const computedFillColor = computed(() => {
 
 const fontOptionGroups = ref<FontGroupOption[]>([
   {
-    label: '系统字体',
+    label: 'Font hệ thống',
     options: systemFonts.value
   },
   {
-    label: '在线字体',
+    label: 'Font trực tuyến',
     options: WEB_FONTS
   }
 ])

@@ -103,7 +103,7 @@
           type="primary"
           @click="replaceImage"
         >
-          替换
+          Thay thế
         </el-button>
       </div>
     </template>

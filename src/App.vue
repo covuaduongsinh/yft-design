@@ -7,7 +7,7 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
-  <el-config-provider :locale="locale?.el">
+  <el-config-provider :locale="locale">
     <router-view />
   </el-config-provider>
 </template>
@@ -15,8 +15,9 @@
 <script lang="ts" setup>
 import useI18n from '@/hooks/useI18n'
 
-const { messages }= useI18n()
-const locale = computed(() => messages.value)
+const { messages, locale: currentLocale }= useI18n()
+// messages chứa mọi ngôn ngữ ({ vi, en }), phải lấy đúng ngôn ngữ đang chọn rồi mới đọc khoá `el`
+const locale = computed(() => messages.value[currentLocale.value])
 
 // 在主入口监听PWA注册事件
 window.addEventListener('beforeinstallprompt', (e) => {

@@ -2,7 +2,7 @@
 
 > **Vị trí tài liệu**: `/docs/plans/vietnamese-localization-plan.md`
 > **Ngày khởi tạo**: 19/11/2026 (sửa cùng ngày: chuyển từ "thêm tiếng Việt" sang "thay hẳn tiếng Trung")
-> **Trạng thái**: Đã lập kế hoạch, chưa triển khai (chưa sửa dòng code nào)
+> **Trạng thái** (19/11/2026): Giai đoạn 1 xong và đã kiểm chứng; Giai đoạn 2 xong các cụm 2.1 đến 2.6 (đã quét chữ Hán, build bằng config tạm, kiểm trình duyệt một phần, xem báo cáo cuối phiên). Giai đoạn 3 chưa làm. `zh.ts` và `'zh'` trong `supportedLangs` đã được gỡ hẳn theo yêu cầu của chủ dự án. Lưu ý: `pnpm build` nguyên bản lỗi esbuild/Windows trên máy này (build kiểm chứng dùng config tạm `target: esnext`).
 > **Cách khảo sát**: chỉ đọc mã nguồn, chưa chạy lệnh nào. Các mục ghi "cần kiểm tra" là điều chưa được xác nhận bằng chạy thử.
 
 ---

@@ -78,7 +78,7 @@ export default () => {
     renderCanvas(textBoxElement);
   };
 
-  const createArcTextElement = (fontSize: number, textStyle = 'transverse', textHollow = false, textValue = '双击修改文字') => {
+  const createArcTextElement = (fontSize: number, textStyle = 'transverse', textHollow = false, textValue = 'Nhấp đúp để sửa chữ') => {
     const { centerPoint } = useCenter()
 
     const textBoxElement = new ArcText(textValue, {
@@ -109,7 +109,7 @@ export default () => {
     renderCanvas(textBoxElement)
   }
 
-  const createVerticalTextElement = (fontSize: number, textHollow = false, textValue = '双击修改文字') => {
+  const createVerticalTextElement = (fontSize: number, textHollow = false, textValue = 'Nhấp đúp để sửa chữ') => {
     const { centerPoint } = useCenter()
 
     const textBoxElement = new VerticalText(textValue, {

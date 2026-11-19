@@ -4,8 +4,8 @@
       <pre>{{ getJSONData() }}</pre>
     </div>
     <div class="btns">
-      <el-button class="btn export" type="primary" @click="exportJSON()">导出 JSON</el-button>
-      <el-button class="btn close" @click="emit('close')">关闭</el-button>
+      <el-button class="btn export" type="primary" @click="exportJSON()">Xuất JSON</el-button>
+      <el-button class="btn close" @click="emit('close')">Đóng</el-button>
     </div>
   </div>
 </template>

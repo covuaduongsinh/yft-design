@@ -9,36 +9,36 @@ export const DesignUnitMode = [
 ]
 
 export const DesignSizeMode = [
-  {id: 0, name: '名片', disabled: false}, 
-  {id: 1, name: '单页', disabled: false}, 
-  {id: 2, name: '自定义', disabled: true}
+  {id: 0, name: 'Thẻ', disabled: false}, 
+  {id: 1, name: 'Một trang', disabled: false}, 
+  {id: 2, name: 'Tuỳ chỉnh', disabled: true}
 ]
 
 export const BackgroundFillMode = [
-  {id: 0, name: '纯色填充'}, 
-  {id: 1, name: '图片填充'}, 
-  {id: 2, name: '渐变填充'},
-  {id: 3, name: '网格填充'},
-  {id: 4, name: '形状填充'},
-  {id: 5, name: '智能填充'},
+  {id: 0, name: 'Tô đơn sắc'}, 
+  {id: 1, name: 'Tô bằng ảnh'}, 
+  {id: 2, name: 'Tô chuyển sắc'},
+  {id: 3, name: 'Tô lưới'},
+  {id: 4, name: 'Tô hình'},
+  {id: 5, name: 'Tô thông minh'},
 ]
 
 // 上传图片
 export const BackgroundFillImageMode = [
-  {id: 'contain', name: '缩放'}, 
-  {id: 'repeat', name: '拼贴'}, 
-  {id: 'cover', name: '铺满'},
+  {id: 'contain', name: 'Thu phóng'}, 
+  {id: 'repeat', name: 'Lát ghép'}, 
+  {id: 'cover', name: 'Phủ kín'},
 ]
 
 // 渐变色
 export const BackgroundFillGradientMode = [
-  {id: 0, name: '线性渐变', value: 'linear'}, 
-  {id: 1, name: '径向渐变', value: 'radial'}, 
+  {id: 0, name: 'Chuyển sắc tuyến tính', value: 'linear'}, 
+  {id: 1, name: 'Chuyển sắc xuyên tâm', value: 'radial'}, 
 ]
 
 // 网格图片
 export const BackgroundFillGridMode = [
-  {id: 0, name: '渐变', value: 'interpolateLinear'}, 
-  {id: 1, name: '闪烁', value: 'sparkle'}, 
-  {id: 2, name: '阴影', value: 'shadows'},
+  {id: 0, name: 'Chuyển sắc', value: 'interpolateLinear'}, 
+  {id: 1, name: 'Lấp lánh', value: 'sparkle'}, 
+  {id: 2, name: 'Bóng', value: 'shadows'},
 ]

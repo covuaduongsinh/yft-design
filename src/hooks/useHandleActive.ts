@@ -89,7 +89,7 @@ export default () => {
               lastStyle = thisStyle
             }
             if (!allSameStyle) {
-              value = '多个值'
+              value = 'Nhiều giá trị'
             } 
             else {
               value = activeObject.fontSize

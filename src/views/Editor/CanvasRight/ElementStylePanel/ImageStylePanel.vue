@@ -35,7 +35,7 @@
               </div>
 
               <template v-for="type in ratioClipOptions" :key="type.label">
-                <div class="title" v-if="type.label">按{{ type.label }}：</div>
+                <div class="title" v-if="type.label">Theo {{ type.label }}:</div>
                 <el-button-group class="row">
                   <el-button style="flex: 1" v-for="item in type.children" :key="item.key" @click="presetImageClip('rect', item.ratio)">{{ item.key }}</el-button>
                 </el-button-group>
@@ -46,7 +46,7 @@
       </el-col>
       <el-col :span="12">
         <el-button class="matting-button" @click="openMatting">
-          <IconMagicWand class="btn-icon" /> 抠图
+          <IconMagicWand class="btn-icon" /> Tách nền
         </el-button>
       </el-col>
     </el-row>

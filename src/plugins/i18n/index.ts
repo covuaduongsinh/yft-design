@@ -15,7 +15,7 @@ import type { I18n, I18nOptions } from 'vue-i18n';
 
 export let i18n: I18n | undefined;
 
-const supportedLangs = ['vi', 'en', 'zh'];
+const supportedLangs = ['vi', 'en'];
 const DEFAULT_LANG = 'vi';
 
 // Chỉ tin giá trị CACHE_LANG khi người dùng đã tự chọn (có CACHE_LANG_CHOSEN).

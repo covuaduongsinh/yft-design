@@ -3,14 +3,14 @@
     <ElementPosition/>
     <el-divider style="margin: 12px 0" />
     <div class="row">
-      <div style="flex: 2;">线条样式：</div>
+      <div style="flex: 2;">Kiểu nét:</div>
       <el-select style="flex: 3;" v-model="lineStyle" @change="changeLineStyle">
-        <el-option :value="0" label="实线"></el-option>
-        <el-option :value="1" label="虚线"></el-option>
+        <el-option :value="0" label="Nét liền"></el-option>
+        <el-option :value="1" label="Nét đứt"></el-option>
       </el-select>
     </div>
     <div class="row">
-      <div style="flex: 2;">线条颜色：</div>
+      <div style="flex: 2;">Màu nét:</div>
       <el-popover trigger="click" width="265"> 
         <template #reference>
           <ColorButton :color="handleElement.stroke" style="flex: 3;" />
@@ -19,24 +19,24 @@
       </el-popover>
     </div>
     <div class="row">
-      <div style="flex: 2;">线条宽度：</div>
+      <div style="flex: 2;">Độ rộng nét:</div>
       <el-input-number :min="1" style="flex: 3;" v-model="handleElement.strokeWidth" @change="updateTemplateElement"></el-input-number>
     </div>
     
     <div class="row">
-      <div style="flex: 2;">起点样式：</div>
+      <div style="flex: 2;">Kiểu điểm đầu:</div>
       <el-select style="flex: 3;" v-model="handleElement.startStyle" @change="(value: LinePoint) => changeLineMode(value, 'start')">
-        <el-option value="" label="无"></el-option>
-        <el-option value="arrow" label="箭头"></el-option>
-        <el-option value="dot" label="圆点"></el-option>
+        <el-option value="" label="Không"></el-option>
+        <el-option value="arrow" label="Mũi tên"></el-option>
+        <el-option value="dot" label="Chấm tròn"></el-option>
       </el-select>
     </div>
     <div class="row">
-      <div style="flex: 2;">终点样式：</div>
+      <div style="flex: 2;">Kiểu điểm cuối:</div>
       <el-select style="flex: 3;" v-model="handleElement.endStyle" @change="(value: LinePoint) => changeLineMode(value, 'end')">
-        <el-option value="" label="无"></el-option>
-        <el-option value="arrow" label="箭头"></el-option>
-        <el-option value="dot" label="圆点"></el-option>
+        <el-option value="" label="Không"></el-option>
+        <el-option value="arrow" label="Mũi tên"></el-option>
+        <el-option value="dot" label="Chấm tròn"></el-option>
       </el-select>
     </div>
 

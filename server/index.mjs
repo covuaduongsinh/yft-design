@@ -181,7 +181,7 @@ const server = http.createServer((req, res) => {
           refresh_token_type: 'Bearer',
           user: userSafe
         },
-        msg: '登录成功'
+        msg: 'Đăng nhập thành công'
       });
     }
 
@@ -237,7 +237,7 @@ const server = http.createServer((req, res) => {
         data: {
           code: autoLoginCaptcha
         },
-        msg: '注册成功'
+        msg: 'Đăng ký thành công'
       });
     }
 

@@ -32,11 +32,11 @@ export const readClipboard = (): Promise<string> => {
   return new Promise((resolve, reject) => {
     if (navigator.clipboard?.readText) {
       navigator.clipboard.readText().then(text => {
-        if (!text) reject('剪贴板为空或者不包含文本')
+        if (!text) reject('Bộ nhớ tạm trống hoặc không chứa văn bản')
         return resolve(text)
       })
     }
-    else reject('浏览器不支持或禁止访问剪贴板，请使用快捷键 Ctrl + V')
+    else reject('Trình duyệt không hỗ trợ hoặc chặn truy cập bộ nhớ tạm, vui lòng dùng phím tắt Ctrl + V')
   })
 }
 

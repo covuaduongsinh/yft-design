@@ -2,8 +2,8 @@
   <div class="export-svg-dialog">
     <div class="preview" v-html="svgHtml"></div>
     <div class="btns">
-      <el-button class="btn export" type="primary" @click="exportSVG()">导出 SVG</el-button>
-      <el-button class="btn close" @click="emit('close')">关闭</el-button>
+      <el-button class="btn export" type="primary" @click="exportSVG()">Xuất SVG</el-button>
+      <el-button class="btn close" @click="emit('close')">Đóng</el-button>
     </div>
   </div>
 </template>

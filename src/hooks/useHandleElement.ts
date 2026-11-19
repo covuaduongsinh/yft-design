@@ -377,7 +377,7 @@ export default () => {
 
   const resetElements = () => {
     const [ canvas ] = useCanvas()
-    ElMessageBox.confirm('确认是否清空画布？', 'Warning', {
+    ElMessageBox.confirm('Bạn có chắc muốn xoá sạch khung vẽ không?', 'Warning', {
       confirmButtonText: 'OK',
       type: 'warning',
     }).then(() => {

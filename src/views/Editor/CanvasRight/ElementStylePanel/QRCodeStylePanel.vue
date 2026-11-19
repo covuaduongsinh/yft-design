@@ -2,7 +2,7 @@
   <div class="image-style-panel">
     <ElementPosition/>
     <el-divider style="margin: 12px 0" />
-    <div class="title">码样式：</div>
+    <div class="title">Kiểu mã:</div>
     <el-carousel type="card" :height="QRSize + 'px'" :initial-index="initialIndex" :autoplay="false" trigger="click" indicator-position="none" ref="carousel">
       <el-carousel-item v-for="item in QRCodeStyleLibs" :key="item.index" :name="item.name">
         <div justify="center" @click="generateQRCode(item.name as QRCodeType)">
@@ -10,19 +10,19 @@
         </div>
       </el-carousel-item>
     </el-carousel>
-    <div class="title">码内容：</div>
+    <div class="title">Nội dung mã:</div>
     <div class="row">
       <el-input v-model="handleElement.codeContent" @change="updateCodeContent"></el-input>
     </div>
     <el-divider style="margin: 12px 0" />
-    <div class="title">码边距：</div>
+    <div class="title">Lề mã:</div>
     <div class="row">
       <el-radio-group class="full-ratio" v-model="handleElement.codeOption.codeSpace" @change="updateCodeSpace">
-        <el-radio-button :value="true" :label="true">无边距</el-radio-button>
-        <el-radio-button :value="false" :label="false">标准边距</el-radio-button>
+        <el-radio-button :value="true" :label="true">Không lề</el-radio-button>
+        <el-radio-button :value="false" :label="false">Lề chuẩn</el-radio-button>
       </el-radio-group>
     </div>
-    <div class="title">容错率：</div>
+    <div class="title">Mức sửa lỗi:</div>
     <div class="row">
       <el-radio-group class="full-ratio" v-model="handleElement.codeOption.codeError" @change="updateCodeError">
         <el-radio-button label="0">7%</el-radio-button>

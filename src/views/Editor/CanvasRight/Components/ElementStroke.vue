@@ -12,11 +12,11 @@
         <el-slider class="slider" v-model="handleElement.strokeWidth" @change="updateStrokeWidth"></el-slider>
       </div>
       <!-- <div class="row">
-        <div class="stroke-name">线冒样式：</div>
+        <div class="stroke-name">Kiểu đầu nét:</div>
         <el-select class="stroke-option" v-model="handleElement.strokeLineCap" @change="updateStrokeLineCap">
-          <el-option value="butt" label="无"></el-option>
-          <el-option value="round" label="圆形"></el-option>
-          <el-option value="square" label="方形"></el-option>
+          <el-option value="butt" label="Không"></el-option>
+          <el-option value="round" label="Tròn"></el-option>
+          <el-option value="square" label="Vuông"></el-option>
         </el-select>
       </div> -->
       <div class="row">

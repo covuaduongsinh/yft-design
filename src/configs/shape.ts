@@ -198,7 +198,7 @@ export const SHAPE_PATH_FORMULAS = {
 
 export const PathShapeLibs: PathListItem[] = [
   {
-    type: '矩形',
+    type: 'Chữ nhật',
     children: [
       {
         viewBox: [200, 200],
@@ -240,7 +240,7 @@ export const PathShapeLibs: PathListItem[] = [
   },
 
   {
-    type: '常用形状',
+    type: 'Hình thường dùng',
     children: [
       {
         viewBox: [200, 200],
@@ -425,7 +425,7 @@ export const PathShapeLibs: PathListItem[] = [
   },
   
   {
-    type: '箭头',
+    type: 'Mũi tên',
     children: [
       {
         viewBox: [200, 200],
@@ -529,7 +529,7 @@ export const PathShapeLibs: PathListItem[] = [
   },
 
   {
-    type: '其他形状',
+    type: 'Hình khác',
     children: [
       {
         viewBox: [1024, 1024],
@@ -630,7 +630,7 @@ export const PathShapeLibs: PathListItem[] = [
   },
 
   {
-    type: '线性',
+    type: 'Dạng nét',
     children: [
       {
         viewBox: [1024, 1024],

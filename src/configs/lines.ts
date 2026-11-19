@@ -31,7 +31,7 @@ export const LinePoolItems: LinePoolItem[] = [
 
 export const PathLineLibs: PresetLine[] = [
   {
-    type: '直线',
+    type: 'Đường thẳng',
     children: [
       { path: 'M 0 0 L 20 20', style: 'solid', points: ['', ''], data: [{x: 0, y: 0}, {x: 200, y: 0}] },
       { path: 'M 0 0 L 20 20', style: 'dashed', points: ['', ''], data: [{x: 0, y: 0}, {x: 200, y: 0}] },
@@ -41,7 +41,7 @@ export const PathLineLibs: PresetLine[] = [
     ],
   },
   {
-    type: '折线、曲线',
+    type: 'Đường gấp khúc, đường cong',
     children: [
       { path: 'M 0 0 L 0 20 L 20 20', style: 'solid', points: ['', 'arrow'], isBroken: true, data: [{x: 0, y: 0}, {x: 0, y: 100}, {x: 200, y: 100}] },
       { path: 'M 0 0 Q 0 20 20 20', style: 'solid', points: ['', 'arrow'], isCurve: true, data: [{x: 0, y: 0}, {x: 200, y: 0}] },

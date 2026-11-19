@@ -164,8 +164,8 @@ const closeImageFillColor = () => {
   ImageFillColorVisible.value = false;
 };
 const openUseGPT = debounce(function() {
-  ElMessageBox.alert('功能开发中，敬请期待', '提示', {
-    confirmButtonText: '我知道了',
+  ElMessageBox.alert('Tính năng đang được phát triển, xin vui lòng chờ đón', 'Thông báo', {
+    confirmButtonText: 'Tôi đã hiểu',
     callback: (action: Action) => {
       console.log(action)
     },

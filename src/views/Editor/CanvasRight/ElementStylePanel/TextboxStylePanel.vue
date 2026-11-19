@@ -27,7 +27,7 @@
     
     <el-row class="mt-10">
       <el-col :span="6">
-        <el-tooltip placement="top" content="文字颜色" :hide-after="0" >
+        <el-tooltip placement="top" content="Màu chữ" :hide-after="0" >
           <div @click.stop class="tooltip-popover">
             <el-popover trigger="click" placement="bottom" :width="265" @click.stop>
               <template #reference>
@@ -43,7 +43,7 @@
         </el-tooltip>
       </el-col>
       <el-col :span="6">
-        <el-tooltip placement="top" content="背景颜色" :hide-after="0">
+        <el-tooltip placement="top" content="Màu nền" :hide-after="0">
           <div @click.stop class="tooltip-popover">
             <el-popover trigger="click" placement="bottom" :width="265">
               <template #reference>
@@ -60,13 +60,13 @@
       </el-col>
       <el-col :span="12">
         <el-button-group class="full-group">
-          <el-tooltip placement="top" content="增大字号" :hide-after="0">
+          <el-tooltip placement="top" content="Tăng cỡ chữ" :hide-after="0">
             <el-button class="font-size" @click="handleElementFontsize('+')">
               <IconFontSize />+
             </el-button>
           </el-tooltip>
 
-          <el-tooltip placement="top" content="减小字号" :hide-after="0">
+          <el-tooltip placement="top" content="Giảm cỡ chữ" :hide-after="0">
             <el-button @click="handleElementFontsize('-')">
               <IconFontSize />-
             </el-button>
@@ -77,22 +77,22 @@
 
     <el-row class="mt-10">
       <div class="full-checkbox">
-        <el-tooltip placement="top" content="加粗" :hide-after="0">
+        <el-tooltip placement="top" content="In đậm" :hide-after="0">
           <el-checkbox-button :value="hasFontWeight" @change="handleElementBlod()">
             <IconTextBold />
           </el-checkbox-button>
         </el-tooltip>
-        <el-tooltip placement="top" content="斜体" :hide-after="0">
+        <el-tooltip placement="top" content="In nghiêng" :hide-after="0">
           <el-checkbox-button v-model="hasFontStyle" @change="handleElementItalic()">
             <IconTextItalic />
           </el-checkbox-button>
         </el-tooltip>
-        <el-tooltip placement="top" content="下划线" :hide-after="0">
+        <el-tooltip placement="top" content="Gạch chân" :hide-after="0">
           <el-checkbox-button v-model="hasUnderline" @change="handleElementUnderline()">
             <IconTextUnderline />
           </el-checkbox-button>
         </el-tooltip>
-        <el-tooltip placement="top" content="删除线" :hide-after="0">
+        <el-tooltip placement="top" content="Gạch ngang" :hide-after="0">
           <el-checkbox-button v-model="hasLinethrough" @change="handleElementLinethrough()">
             <IconStrikethrough />
           </el-checkbox-button>
@@ -102,22 +102,22 @@
 
     <el-row class="mt-10">
       <el-button-group class="full-group">
-        <el-tooltip placement="top" content="横向" :hide-after="0">
+        <el-tooltip placement="top" content="Ngang" :hide-after="0">
           <el-button @click="handleElementArrange(false)" :type="elementGrapheme ? 'primary': ''">
             <IconTextRotationNone />
           </el-button>
         </el-tooltip>
-        <el-tooltip placement="top" content="纵向" :hide-after="0">
+        <el-tooltip placement="top" content="Dọc" :hide-after="0">
           <el-button @click="handleElementArrange(true)" :type="!elementGrapheme ? 'primary': ''">
             <IconTextRotationDown />
           </el-button>
         </el-tooltip>
-        <el-tooltip placement="top" content="减小缩进" :hide-after="0">
+        <el-tooltip placement="top" content="Giảm thụt lề" :hide-after="0">
           <el-button @click="handleElementCharSpacing('-')">
             <IconIndentLeft />
           </el-button>
         </el-tooltip>
-        <el-tooltip placement="top" content="增大缩进" :hide-after="0">
+        <el-tooltip placement="top" content="Tăng thụt lề" :hide-after="0">
           <el-button @click="handleElementCharSpacing('+')">
             <IconIndentRight />
           </el-button>
@@ -128,22 +128,22 @@
     <el-row class="mt-10">
       <el-col :span="24">
         <el-radio-group class="full-ratio" v-model="textAlign" @change="handleTextAlign">
-          <el-tooltip placement="top" content="左对齐" :hide-after="0">
+          <el-tooltip placement="top" content="Căn trái" :hide-after="0">
             <el-radio-button value="justify-left">
               <IconAlignTextLeft />
             </el-radio-button>
           </el-tooltip>
-          <el-tooltip placement="top" content="居中" :hide-after="0">
+          <el-tooltip placement="top" content="Căn giữa" :hide-after="0">
             <el-radio-button value="justify-center">
               <IconAlignTextCenter />
             </el-radio-button>
           </el-tooltip>
-          <el-tooltip placement="top" content="右对齐" :hide-after="0">
+          <el-tooltip placement="top" content="Căn phải" :hide-after="0">
             <el-radio-button value="justify-right">
               <IconAlignTextRight />
             </el-radio-button>
           </el-tooltip>
-          <el-tooltip placement="top" content="两边对齐" :hide-after="0">
+          <el-tooltip placement="top" content="Căn đều hai bên" :hide-after="0">
             <el-radio-button value="justify">
               <IconAlignTextBoth />
             </el-radio-button>
@@ -154,14 +154,14 @@
 
     <el-row class="mt-10">
       <el-col :span="12">
-        <el-tooltip placement="top" content="转曲" :hide-after="0">
+        <el-tooltip placement="top" content="Chuyển thành đường vẽ" :hide-after="0">
           <el-button class="full-button" @click="handleElementCurve">
             <IconTextStyleOne />
           </el-button>
         </el-tooltip>
       </el-col>
       <el-col :span="12">
-        <el-tooltip placement="top" content="变形" :hide-after="0">
+        <el-tooltip placement="top" content="Biến dạng" :hide-after="0">
           <el-button class="full-button" :type="handleElement.type.toLowerCase() === ElementNames.ARCTEXT ? 'primary' : ''" @click="handleElementDeformation">
             <i class="handler-item iconfont icon-text-path" />
           </el-button>
@@ -172,12 +172,12 @@
     <el-row class="mt-10" v-show="handleElement.type.toLowerCase() === ElementNames.ARCTEXT">
       <el-col :span="4" class="flex-align">
         <el-radio-group class="full-ratio" v-model="(handleElement as ArcText).showCurvature" @change="changeArcTextStatus">
-          <el-tooltip placement="top" content="隐藏弧度" :hide-after="0" v-if="(handleElement as ArcText).showCurvature">
+          <el-tooltip placement="top" content="Ẩn độ cong" :hide-after="0" v-if="(handleElement as ArcText).showCurvature">
             <el-radio-button :value="false">
               <IconPreviewClose />
             </el-radio-button>
           </el-tooltip>
-          <el-tooltip placement="top" content="显示弧度" :hide-after="0" v-else>
+          <el-tooltip placement="top" content="Hiện độ cong" :hide-after="0" v-else>
             <el-radio-button :value="true">
               <IconPreviewOpen />
             </el-radio-button>
@@ -199,12 +199,12 @@
     <el-divider style="margin: 12px 0" />
 
     <div class="row">
-      <div style="flex: 2;">行距：</div>
+      <div style="flex: 2;">Dãn dòng:</div>
       <el-select style="flex: 3" suffix-icon="IconRowHeight" v-model="handleElement.lineHeight" @change="changeLineHeight">
         <el-option v-for="item in LineHeightLibs" :key="item" :value="item" :label="item"></el-option>
       </el-select>
       <div style="flex: 1;"></div>
-      <div style="flex: 2;">字距：</div>
+      <div style="flex: 2;">Dãn chữ:</div>
       <el-select style="flex: 3" suffix-icon="IconFullwidth" v-model="handleElement.charSpacing" @change="changeCharSpacing">
         <el-option v-for="item in CharSpaceLibs" :key="item" :value="item" :label="item"></el-option>
       </el-select>
@@ -277,11 +277,11 @@ const hasPatterns = computed(() => (handleElement.value as TextboxElement).fillT
 const elementFontFamily = ref<string>(hasFontFamily.value)
 const fontOptionGroups = ref<FontGroupOption[]>([
   {
-    label: '系统字体',
+    label: 'Font hệ thống',
     options: systemFonts.value
   },
   {
-    label: '在线字体',
+    label: 'Font trực tuyến',
     options: onlineFonts.value
   }
 ])

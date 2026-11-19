@@ -10,12 +10,12 @@
       >
       <div class="element-info">
         <div v-if="element.type.toLowerCase() === ElementNames.GROUP">
-          <el-tooltip placement="top" :hide-after="0" :content="(element as Group).isShow ? '收回' : '展开'">
+          <el-tooltip placement="top" :hide-after="0" :content="(element as Group).isShow ? 'Thu gọn' : 'Mở rộng'">
             <IconExpandDownOne v-if="(element as Group).isShow" class="common-icon" @click.stop="showElement(element.id)"/>
             <IconFoldUpOne v-else class="common-icon" @click.stop="showElement(element.id)"/>
           </el-tooltip>
         </div>
-        <el-tooltip placement="top" :hide-after="0" content="拖拽" v-else>
+        <el-tooltip placement="top" :hide-after="0" content="Kéo thả" v-else>
           <IconApplicationMenu class="common-icon"/>
         </el-tooltip>
         <div class="element-type">{{ element.type }}</div>
@@ -24,19 +24,19 @@
       </div>
       
       <div class="element-handler">
-        <el-tooltip placement="top" :hide-after="0" :content="element.visible ? '隐藏' : '显示'">
+        <el-tooltip placement="top" :hide-after="0" :content="element.visible ? 'Ẩn' : 'Hiện'">
           <IconPreviewOpen class="common-icon" v-if="element.visible" @click.stop="visibleElement(element.id, false)"/>
           <IconPreviewClose class="common-icon" v-else @click.stop="visibleElement(element.id, true)"/>
         </el-tooltip>
-        <el-tooltip placement="top" :hide-after="0" :content="element.lockMovementX && element.lockMovementY ? '解锁' : '锁定'">
+        <el-tooltip placement="top" :hide-after="0" :content="element.lockMovementX && element.lockMovementY ? 'Mở khoá' : 'Khoá'">
           <IconLock class="common-icon" v-if="element.lockMovementX && element.lockMovementY" @click.stop="lockElement(element.id, false)"/>
           <IconUnlock class="common-icon" v-else @click.stop="lockElement(element.id, true)"/>
         </el-tooltip>
-        <el-tooltip placement="top" :hide-after="0" content="删除">
+        <el-tooltip placement="top" :hide-after="0" content="Xoá">
           <IconDelete class="common-icon" @click.stop="deleteElement(element.id)"/>
         </el-tooltip>
         <div v-if="element.type.toLowerCase() === ElementNames.TEXTBOX || element.type.toLowerCase() === ElementNames.ITEXT">
-          <el-tooltip placement="top" :hide-after="0" :content="(element as TextboxElement).editable ? '可编辑文字' : '不可编辑文字'">
+          <el-tooltip placement="top" :hide-after="0" :content="(element as TextboxElement).editable ? 'Chữ có thể chỉnh sửa' : 'Chữ không thể chỉnh sửa'">
             <IconCheckOne class="common-icon" v-if="(element as TextboxElement).editable" @click.stop="checkElement(element.id)"/>
             <IconRound class="common-icon" v-else  @click.stop="checkElement(element.id)"/>
           </el-tooltip>

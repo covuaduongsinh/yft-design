@@ -23,12 +23,12 @@
           </el-dropdown>
         </div>
         <div v-else>
-          <el-button size="small" text type="primary" @click="loginDialogVisible = true">登录</el-button>
+          <el-button size="small" text type="primary" @click="loginDialogVisible = true">Đăng nhập</el-button>
         </div>
       </div>
       <div>
-        <el-button text>分享</el-button>
-        <el-button type="primary" @click="exportFile">下载</el-button>
+        <el-button text>Chia sẻ</el-button>
+        <el-button type="primary" @click="exportFile">Tải xuống</el-button>
         <el-button text href="https://github.com/dromara/yft-design" tag="a" target="_blank" rel="noopener noreferrer">
           <IconGithub class="footer-button"></IconGithub>
         </el-button>

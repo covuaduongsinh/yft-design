@@ -51,7 +51,7 @@ service.interceptors.response.use(
       }
 
       ElMessage({
-        message: msg || '系统出错',
+        message: msg || 'Lỗi hệ thống',
         type: 'error',
       });
       return Promise.reject(new Error(msg || 'Error'));
@@ -63,7 +63,7 @@ service.interceptors.response.use(
       console.log('code:', error.response.data)
       // token 过期,重新登录
       if (detail === 'Signature has expired.') {
-        ElMessageBox.confirm('当前页面已失效，请重新登录', 'Warning', {
+        ElMessageBox.confirm('Phiên làm việc đã hết hạn, vui lòng đăng nhập lại', 'Warning', {
           confirmButtonText: 'OK',
           type: 'warning',
         }).then(() => {
@@ -72,7 +72,7 @@ service.interceptors.response.use(
         });
       } else {
         ElMessage({
-          message: detail || '系统出错',
+          message: detail || 'Lỗi hệ thống',
           type: 'error',
         });
       }

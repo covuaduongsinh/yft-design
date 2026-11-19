@@ -1,12 +1,12 @@
 export const ratioClipOptions = [
   {
-    label: '纵横比（方形）',
+    label: 'tỉ lệ khung hình (vuông)',
     children: [
       { key: '1:1', ratio: 1 / 1 },
     ],
   },
   {
-    label: '纵横比（纵向）',
+    label: 'tỉ lệ khung hình (dọc)',
     children: [
       { key: '2:3', ratio: 3 / 2 },
       { key: '3:4', ratio: 4 / 3 },
@@ -15,7 +15,7 @@ export const ratioClipOptions = [
     ],
   },
   {
-    label: '纵横比（横向）',
+    label: 'tỉ lệ khung hình (ngang)',
     children: [
       { key: '3:2', ratio: 2 / 3 },
       { key: '4:3', ratio: 3 / 4 },
@@ -49,7 +49,7 @@ export const enum ClipPaths {
 
 export const CLIPPATHS = {
   rect: {
-    name: '矩形',
+    name: 'Chữ nhật',
     type: ClipPathTypes.RECT,
     radius: '0',
     style: '',
@@ -58,7 +58,7 @@ export const CLIPPATHS = {
     },
   },
   rect2: {
-    name: '矩形2',
+    name: 'Chữ nhật 2',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(0% 0%, 80% 0%, 100% 20%, 100% 100%, 0 100%)',
     createPath: (width: number, height: number) => {
@@ -66,7 +66,7 @@ export const CLIPPATHS = {
     },
   },
   rect3: {
-    name: '矩形3',
+    name: 'Chữ nhật 3',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(0% 0%, 80% 0%, 100% 20%, 100% 100%, 20% 100%, 0% 80%)',
     createPath: (width: number, height: number) => {
@@ -74,7 +74,7 @@ export const CLIPPATHS = {
     },
   },
   roundRect: {
-    name: '圆角矩形',
+    name: 'Chữ nhật bo góc',
     type: ClipPathTypes.RECT,
     radius: '10px',
     style: 'inset(0 0 0 0 round 10px 10px 10px 10px)',
@@ -92,7 +92,7 @@ export const CLIPPATHS = {
     },
   },
   ellipse: {
-    name: '圆形',
+    name: 'Hình tròn',
     type: ClipPathTypes.ELLIPSE,
     style: 'ellipse(50% 50% at 50% 50%)',
     createPath: (width: number, height: number, radius=100) => {
@@ -104,7 +104,7 @@ export const CLIPPATHS = {
     },
   },
   triangle: {
-    name: '三角形',
+    name: 'Tam giác',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(50% 0%, 0% 100%, 100% 100%)',
     createPath: (width: number, height: number) => {
@@ -112,7 +112,7 @@ export const CLIPPATHS = {
     },
   },
   triangle2: {
-    name: '三角形2',
+    name: 'Tam giác 2',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(50% 100%, 0% 0%, 100% 0%)',
     createPath: (width: number, height: number) => {
@@ -120,7 +120,7 @@ export const CLIPPATHS = {
     },
   },
   triangle3: {
-    name: '三角形3',
+    name: 'Tam giác 3',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(0% 0%, 0% 100%, 100% 100%)',
     createPath: (width: number, height: number) => {
@@ -128,7 +128,7 @@ export const CLIPPATHS = {
     },
   },
   rhombus: {
-    name: '菱形',
+    name: 'Hình thoi',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
     createPath: (width: number, height: number) => {
@@ -136,7 +136,7 @@ export const CLIPPATHS = {
     },
   },
   pentagon: {
-    name: '五边形',
+    name: 'Ngũ giác',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
     createPath: (width: number, height: number) => {
@@ -144,7 +144,7 @@ export const CLIPPATHS = {
     },
   },
   hexagon: {
-    name: '六边形',
+    name: 'Lục giác',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%)',
     createPath: (width: number, height: number) => {
@@ -152,7 +152,7 @@ export const CLIPPATHS = {
     },
   },
   heptagon: {
-    name: '七边形',
+    name: 'Thất giác',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(50% 0%, 90% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 10% 20%)',
     createPath: (width: number, height: number) => {
@@ -160,7 +160,7 @@ export const CLIPPATHS = {
     },
   },
   octagon: {
-    name: '八边形',
+    name: 'Bát giác',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
     createPath: (width: number, height: number) => {
@@ -168,7 +168,7 @@ export const CLIPPATHS = {
     },
   },
   chevron: {
-    name: 'V形',
+    name: 'Hình V',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(75% 0%, 100% 50%, 75% 100%, 0% 100%, 25% 50%, 0% 0%)',
     createPath: (width: number, height: number) => {
@@ -176,7 +176,7 @@ export const CLIPPATHS = {
     },
   },
   point: {
-    name: '点',
+    name: 'Chấm',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)',
     createPath: (width: number, height: number) => {
@@ -184,7 +184,7 @@ export const CLIPPATHS = {
     },
   },
   arrow: {
-    name: '箭头',
+    name: 'Mũi tên',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(0% 20%, 60% 20%, 60% 0%, 100% 50%, 60% 100%, 60% 80%, 0% 80%)',
     createPath: (width: number, height: number) => {
@@ -192,7 +192,7 @@ export const CLIPPATHS = {
     },
   },
   parallelogram: {
-    name: '平行四边形',
+    name: 'Hình bình hành',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(30% 0%, 100% 0%, 70% 100%, 0% 100%)',
     createPath: (width: number, height: number) => {
@@ -200,7 +200,7 @@ export const CLIPPATHS = {
     },
   },
   parallelogram2: {
-    name: '平行四边形2',
+    name: 'Hình bình hành 2',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(30% 100%, 100% 100%, 70% 0%, 0% 0%)',
     createPath: (width: number, height: number) => {
@@ -208,7 +208,7 @@ export const CLIPPATHS = {
     },
   },
   trapezoid: {
-    name: '梯形',
+    name: 'Hình thang',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%)',
     createPath: (width: number, height: number) => {
@@ -216,7 +216,7 @@ export const CLIPPATHS = {
     },
   },
   trapezoid2: {
-    name: '梯形2',
+    name: 'Hình thang 2',
     type: ClipPathTypes.POLYGON,
     style: 'polygon(0% 0%, 100% 0%, 75% 100%, 25% 100%)',
     createPath: (width: number, height: number) => {
@@ -261,33 +261,33 @@ export const EmbossMatrix =  [ 1,  1, 1,  1, 0.7, -1, -1,  -1, -1 ]
 // backgrounds, fashion, nature, science, education, feelings, health, people, religion, 
 // places, animals, industry, computer, food, sports, transportation, travel, buildings, business, music
 export const ImageCategoryInfo = [
-  {id: 0, name: '背景', type: 'backgrounds', category: [], total: []},
-  {id: 1, name: '自然', type: 'nature', category: [], total: []},
-  {id: 2, name: '科学', type: 'science', category: [], total: []},
-  {id: 3, name: '教育', type: 'education', category: [], total: []},
-  {id: 4, name: '情感', type: 'feelings', category: [], total: []},
-  {id: 5, name: '健康', type: 'health', category: [], total: []},
-  {id: 6, name: '场所', type: 'places', category: [], total: []},
-  {id: 7, name: '动物', type: 'animals', category: [], total: []},
-  {id: 8, name: '工业', type: 'industry', category: [], total: []},
-  {id: 9, name: '计算机', type: 'computer', category: [], total: []},
-  {id: 10, name: '食品', type: 'food', category: [], total: []},
-  {id: 11, name: '体育', type: 'sports', category: [], total: []},
-  {id: 12, name: '交通', type: 'transportation', category: [], total: []},
-  {id: 13, name: '旅游', type: 'travel', category: [], total: []},
-  {id: 14, name: '建筑', type: 'buildings', category: [], total: []},
-  {id: 15, name: '商业', type: 'business', category: [], total: []},
-  {id: 16, name: '时尚', type: 'fashion', category: [], total: []},
-  {id: 17, name: '人物', type: 'people', category: [], total: []},
+  {id: 0, name: 'Nền', type: 'backgrounds', category: [], total: []},
+  {id: 1, name: 'Thiên nhiên', type: 'nature', category: [], total: []},
+  {id: 2, name: 'Khoa học', type: 'science', category: [], total: []},
+  {id: 3, name: 'Giáo dục', type: 'education', category: [], total: []},
+  {id: 4, name: 'Cảm xúc', type: 'feelings', category: [], total: []},
+  {id: 5, name: 'Sức khoẻ', type: 'health', category: [], total: []},
+  {id: 6, name: 'Địa điểm', type: 'places', category: [], total: []},
+  {id: 7, name: 'Động vật', type: 'animals', category: [], total: []},
+  {id: 8, name: 'Công nghiệp', type: 'industry', category: [], total: []},
+  {id: 9, name: 'Máy tính', type: 'computer', category: [], total: []},
+  {id: 10, name: 'Thực phẩm', type: 'food', category: [], total: []},
+  {id: 11, name: 'Thể thao', type: 'sports', category: [], total: []},
+  {id: 12, name: 'Giao thông', type: 'transportation', category: [], total: []},
+  {id: 13, name: 'Du lịch', type: 'travel', category: [], total: []},
+  {id: 14, name: 'Kiến trúc', type: 'buildings', category: [], total: []},
+  {id: 15, name: 'Kinh doanh', type: 'business', category: [], total: []},
+  {id: 16, name: 'Thời trang', type: 'fashion', category: [], total: []},
+  {id: 17, name: 'Con người', type: 'people', category: [], total: []},
 ]
 
 export const MattingModel = [
-  {id: 'universal', key: 'universal', name: '通用'},
-  {id: 'people', key: 'people', name: '人像'},
+  {id: 'universal', key: 'universal', name: 'Chung'},
+  {id: 'people', key: 'people', name: 'Chân dung'},
 ]
 
 export const BlendModes = [
-  {id: 'source-over', key: 'source-over', name: '正常'},
+  {id: 'source-over', key: 'source-over', name: 'Bình thường'},
   // {id: 'source-in', key: 'source-in', name: '人像'},
   // {id: 'source-out', key: 'source-out', name: '人像'},
   // {id: 'source-atop', key: 'source-atop', name: '人像'},
@@ -295,20 +295,20 @@ export const BlendModes = [
   // {id: 'destination-out', key: 'destination-out', name: '人像'},
   // {id: 'destination-atop', key: 'destination-atop', name: '人像'},
   // {id: 'lighter', key: 'lighter', name: '人像'},
-  {id: 'screen', key: 'screen', name: '滤色'},
+  {id: 'screen', key: 'screen', name: 'Lọc màu'},
   // {id: 'copy', key: 'copy', name: '人像'},
   // {id: 'xor', key: 'xor', name: '人像'},
-  {id: 'multiply', key: 'multiply', name: '正片叠加'},
-  {id: 'darken', key: 'darken', name: '变暗'},
-  {id: 'lighten', key: 'lighten', name: '变亮'},
-  {id: 'color-dodge', key: 'color-dodge', name: '颜色减淡'},
-  {id: 'color-burn', key: 'color-burn', name: '颜色加深'},
-  {id: 'hard-light', key: 'hard-light', name: '强光'},
-  {id: 'soft-light', key: 'soft-light', name: '柔光'},
-  {id: 'difference', key: 'difference', name: '差值'},
-  {id: 'exclusion', key: 'exclusion', name: '排除'},
-  {id: 'hue', key: 'hue', name: '色相'},
-  {id: 'saturation', key: 'saturation', name: '饱和度'},
-  {id: 'color', key: 'color', name: '颜色'},
-  {id: 'luminosity', key: 'luminosity', name: '明度'},
+  {id: 'multiply', key: 'multiply', name: 'Nhân'},
+  {id: 'darken', key: 'darken', name: 'Tối hơn'},
+  {id: 'lighten', key: 'lighten', name: 'Sáng hơn'},
+  {id: 'color-dodge', key: 'color-dodge', name: 'Làm nhạt màu'},
+  {id: 'color-burn', key: 'color-burn', name: 'Làm đậm màu'},
+  {id: 'hard-light', key: 'hard-light', name: 'Ánh sáng mạnh'},
+  {id: 'soft-light', key: 'soft-light', name: 'Ánh sáng dịu'},
+  {id: 'difference', key: 'difference', name: 'Chênh lệch'},
+  {id: 'exclusion', key: 'exclusion', name: 'Loại trừ'},
+  {id: 'hue', key: 'hue', name: 'Sắc thái'},
+  {id: 'saturation', key: 'saturation', name: 'Độ bão hoà'},
+  {id: 'color', key: 'color', name: 'Màu sắc'},
+  {id: 'luminosity', key: 'luminosity', name: 'Độ sáng'},
 ]

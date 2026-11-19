@@ -28,7 +28,7 @@
               </el-dropdown>
             </div>
             <div v-else>
-              <el-button type="primary" @click="handleLoginDialog(true)">登录/注册</el-button>
+              <el-button type="primary" @click="handleLoginDialog(true)">Đăng nhập / Đăng ký</el-button>
             </div>
           </el-col>
         </el-row>
@@ -40,19 +40,19 @@
               <span class="flex w-[30px] justify-center">
                 <IconNavigation/>
               </span>
-              <span>为你推荐</span>
+              <span>Dành cho bạn</span>
             </el-menu-item>
             <el-menu-item index="2">
               <span class="flex w-[30px] justify-center">
                 <SvgIcon icon-class="chatgpt" className="svg-size" />
               </span>
-              <span>智能AI</span>
+              <span>AI thông minh</span>
             </el-menu-item>
             <el-menu-item index="3">
               <span class="flex w-[30px] justify-center">
                 <IconViewList/>
               </span>
-              <span>模版空间</span>
+              <span>Không gian mẫu</span>
             </el-menu-item>
           </el-menu>
         </el-aside>
@@ -61,7 +61,7 @@
           <!-- <MainScene />
           <MainTools /> -->
           <el-row class="mt-[40px]">
-            <b class="text-[20px]">今日推荐</b>
+            <b class="text-[20px]">Đề xuất hôm nay</b>
           </el-row>
           <TransitionGroup :name="resultReactive.move ? 'group' : ''" tag="div" class="waterfall-box" id="homeWaterfall">
             <div class="waterfall-item" v-for="(item, index) in resultReactive.items" :key="item.id">

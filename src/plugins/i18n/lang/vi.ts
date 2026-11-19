@@ -166,7 +166,7 @@ export default {
     rightAngle: 'Góc vuông',
     fillet: 'Bo góc',
     unit: 'Đơn vị',
-    card: 'Danh thiếp',
+    card: 'Thẻ',
     singlePage: 'Một trang',
     custom: 'Tuỳ chỉnh',
     canvasFill: 'Nền khung vẽ',

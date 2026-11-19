@@ -2,10 +2,10 @@
   <el-dialog v-model="dialogVisible" title="" :width="dialogWidth" class="login-dialog" :before-close="closeLogin">
     <el-row>
       <el-row class="text-[20px] text-[#222529] font-semibold leading-snug justify-center">
-        {{loginInfo}}登录
+        Đăng nhập bằng {{loginInfo}}
       </el-row>
       <el-row class="text-[12px] mt-[10px] justify-center">
-        仅用于身份识别，yft-design不会获取您的任何隐私信息~
+        Chỉ dùng để xác định danh tính, yft-design sẽ không thu thập bất kỳ thông tin riêng tư nào của bạn~
       </el-row>
       <el-row v-if="loginType === 1">
         <div class="overflow-hidden relative mt-[20px] mx-auto p-[10px] border border-solid border-[rgba(0, 0, 0, .08)] rounded-[8px] justify-center">
@@ -31,16 +31,16 @@
             </el-form-item>
             <el-form-item v-if="checkType === 2" class="captcha">
               <el-input style="width: 120px;" v-model="ruleForm.captcha"/>
-              <el-button @click="getEmailCaptcha">获取验证码</el-button>
+              <el-button @click="getEmailCaptcha">Lấy mã xác thực</el-button>
             </el-form-item>
           </el-form>
         </el-row>
         <el-row class="content-center">
-          <el-button class="w-[230px]" type="primary" @click="handleVerify">{{ checkType === 1 ? '登录' : '注册' }}</el-button>
+          <el-button class="w-[230px]" type="primary" @click="handleVerify">{{ checkType === 1 ? 'Đăng nhập' : 'Đăng ký' }}</el-button>
         </el-row>
         <el-row class="content-center mt-[5px] text-[12px]">
-          <span v-if="checkType === 1">没有账号？点击<a href="javascript:;" class="text-[#1e2ad7] font-[800]" @click="changeCheckType(2)">注册账号</a></span>
-          <span v-if="checkType === 2">已有账号！<a href="javascript:;" class="text-[#1e2ad7] font-[800]" @click="changeCheckType(1)">立即登陆</a></span>
+          <span v-if="checkType === 1">Chưa có tài khoản? Nhấp <a href="javascript:;" class="text-[#1e2ad7] font-[800]" @click="changeCheckType(2)">Đăng ký tài khoản</a></span>
+          <span v-if="checkType === 2">Đã có tài khoản! <a href="javascript:;" class="text-[#1e2ad7] font-[800]" @click="changeCheckType(1)">Đăng nhập ngay</a></span>
         </el-row>
       </el-row>
       <el-row class="mt-[28px] justify-center">
@@ -61,7 +61,7 @@
     </el-row>
     <template #footer>
       <el-row class="justify-center text-[12px] text-[#9da3ac]">
-        登录即代表您同意《<strong><a href="" class="hover:text-blue-700">用户服务协议</a></strong>》
+        Đăng nhập đồng nghĩa với việc bạn đồng ý <strong><a href="" class="hover:text-blue-700">Điều khoản dịch vụ</a></strong>
       </el-row>
     </template>
   </el-dialog>
@@ -85,7 +85,7 @@ const dialogWidth = computed(() => isMobile() ? '75%' : '35%')
 const qrcode = ref('')
 const checkType = ref(1)
 const loginType = ref(2)
-const loginInfo = ref('用户')
+const loginInfo = ref('tài khoản')
 const loginCaptchaImage = ref('')
 const loginCaptchaLoading = ref(false)
 const props = defineProps({
@@ -105,21 +105,21 @@ const rules = reactive<FormRules<OauthVerifyData>>({
   email: [
     {
       required: true,
-      message: '请输入邮箱',
+      message: 'Vui lòng nhập email',
       trigger: 'blur',
     },
   ],
   password: [
     {
       required: true,
-      message: '请输入密码',
+      message: 'Vui lòng nhập mật khẩu',
       trigger: 'blur',
     },
   ],
   captcha: [
     {
       required: true,
-      message: '请输入验证码',
+      message: 'Vui lòng nhập mã xác thực',
       trigger: 'blur',
     },
   ],
@@ -184,11 +184,11 @@ const { loginStatus, username } = storeToRefs(userStore)
 const handleRegister = async () => {
   const result = await oauthRegister(ruleForm)
   if (result.data.code === 200 && result.data.data.code) {
-    ElMessage.success('注册成功')
+    ElMessage.success('Đăng ký thành công')
     const code = result.data.data.code
     await handleLogin(code)
   } else {
-    ElMessage.error(result.data.msg || '注册失败')
+    ElMessage.error(result.data.msg || 'Đăng ký thất bại')
     getOauthCaptcha()
   }
 }
@@ -220,9 +220,9 @@ const handleLogin = async (code?: string) => {
     })
     username.value = userResult.user.username
     emit('close', false)
-    ElMessage.success('登录成功')
+    ElMessage.success('Đăng nhập thành công')
   } else {
-    ElMessage.error(result.data.msg || '登录失败')
+    ElMessage.error(result.data.msg || 'Đăng nhập thất bại')
     getOauthCaptcha()
   }
 }
@@ -246,12 +246,12 @@ const loginGithub = async () => {
 
 const loginQQ = () => {
   loginType.value = 1
-  loginInfo.value = '微信'
+  loginInfo.value = 'WeChat'
 }
 
 const loginEmail = () => {
   loginType.value = 2
-  loginInfo.value = '用户'
+  loginInfo.value = 'tài khoản'
   getOauthCaptcha()
 }
 

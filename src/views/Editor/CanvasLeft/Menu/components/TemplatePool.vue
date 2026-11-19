@@ -105,7 +105,7 @@ const getTemplateItems = async () => {
 
 const handleChangeTemplate = (item: TemplateItem) => {
   ElMessageBox.confirm(
-    '是否确认更换模板？',
+    'Bạn có chắc muốn đổi mẫu không?',
     {
       confirmButtonText: 'OK',
       cancelButtonText: 'Cancel',
@@ -120,13 +120,13 @@ const handleChangeTemplate = (item: TemplateItem) => {
       nextTick(() => loadingInstance.close())
       ElMessage({
         type: 'success',
-        message: '更换模板成功',
+        message: 'Đổi mẫu thành công',
       })
     })
     .catch(() => {
       ElMessage({
         type: 'error',
-        message: '模板加载失败,请联系管理员修改bug了',
+        message: 'Tải mẫu thất bại, vui lòng liên hệ quản trị viên',
       })
     })
   

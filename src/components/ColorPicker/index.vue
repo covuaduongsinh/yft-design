@@ -58,7 +58,7 @@
       ></div>
     </div>
 
-    <div class="recent-colors-title" v-if="recentColors.length">最近使用：</div>
+    <div class="recent-colors-title" v-if="recentColors.length">Dùng gần đây:</div>
     <div class="picker-presets">
       <div
         v-for="c in recentColors"
@@ -216,7 +216,7 @@ const openEyeDropper = () => {
 const browserEyeDropper = () => {
   ElMessage({
     type: 'success',
-    message: '按 ESC 键关闭取色吸管'
+    message: 'Nhấn ESC để đóng ống hút màu'
   })
 
   // eslint-disable-next-line
@@ -230,7 +230,7 @@ const browserEyeDropper = () => {
   }).catch(() => {
     ElMessage({
       type: 'success',
-      message: '关闭取色吸管'
+      message: 'Đã đóng ống hút màu'
     })
   })
 }
@@ -306,7 +306,7 @@ const customEyeDropper = () => {
   }).catch(() => {
     ElMessage({
       type: 'error',
-      message: '取色吸管初始化失败'
+      message: 'Khởi tạo ống hút màu thất bại'
     })
     document.body.removeChild(maskRef)
   })

@@ -2,16 +2,16 @@
   <div>
     <el-row class="content-center">
       <el-col :span="6" class="center-col">
-        <el-button text>换模板</el-button>
+        <el-button text>Đổi mẫu</el-button>
       </el-col>
       <el-col :span="6" class="center-col">
-        <el-button text>换文字</el-button>
+        <el-button text>Đổi chữ</el-button>
       </el-col>
       <el-col :span="6" class="center-col">
-        <el-button text>换图片</el-button>
+        <el-button text>Đổi ảnh</el-button>
       </el-col>
       <el-col :span="6" class="center-col">
-        <el-button text>添加</el-button>
+        <el-button text>Thêm</el-button>
       </el-col>
     </el-row>
   </div>

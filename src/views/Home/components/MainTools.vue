@@ -2,7 +2,7 @@
   <div class="page-section-container mb-10" >
     <section>
       <div class="section-header">
-        <h2 class="title-wrapper">常用工具</h2>
+        <h2 class="title-wrapper">Công cụ thường dùng</h2>
       </div>
       <div class="tools-wrapper">
         <div v-for="item in HomeTools" :key="item.name">
@@ -13,7 +13,7 @@
     </section>
     <section>
       <div class="section-header">
-        <h2 class="title-wrapper">常用物料</h2>
+        <h2 class="title-wrapper">Tài nguyên thường dùng</h2>
       </div>
       <!-- Image TODO -->
       <div class="materials-wrapper">
@@ -28,25 +28,25 @@
   <div class="page-section-container">
     <section>
       <div class="section-header">
-        <h2 class="title-wrapper">编辑推荐</h2>
+        <h2 class="title-wrapper">Biên tập viên đề xuất</h2>
       </div>
       <div class="editor-recommend">
         <div>
           <div v-for="item in ['img1','img2','img3','img4']" :key="item">{{ item }}</div>
-          <p>每日-新品推介</p>
+          <p>Mỗi ngày - Giới thiệu sản phẩm mới</p>
         </div>
         <div>
           <div>img1</div>
           <div>img2</div>
           <p>
-            夏日精选营销物料
+            Tài nguyên tiếp thị mùa hè chọn lọc
           </p>
        </div>
       </div>
     </section>
     <section>
       <div class="section-header">
-        <h2 class="title-wrapper">热点日历</h2>
+        <h2 class="title-wrapper">Lịch chủ đề nổi bật</h2>
       </div>
       <div class="hot-topic-calendar">
         <div>1</div>

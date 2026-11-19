@@ -2,7 +2,7 @@
   <div>
     <div class="left-top-tabs" id="left-top-tabs">
       <div class="top-tab">
-        <el-tooltip placement="top" :hide-after="0" content="首页">
+        <el-tooltip placement="top" :hide-after="0" content="Trang chủ">
           <IconHome class="handler-item" @click="goHome"/>
         </el-tooltip>
       </div>

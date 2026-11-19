@@ -39,7 +39,7 @@ const props = defineProps({
   },
   loadingText: {
     type: String,
-    default: '加载中'
+    default: 'Đang tải'
   },
   loading: {
     type: Boolean,
@@ -51,7 +51,7 @@ const props = defineProps({
   },
   endText: {
     type: String,
-    default: '没有更多了'
+    default: 'Không còn nữa'
   },
   autoCenter: {
     type: Boolean,
