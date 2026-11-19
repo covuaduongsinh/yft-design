@@ -88,7 +88,6 @@ const loginType = ref(2)
 const loginInfo = ref('用户')
 const loginCaptchaImage = ref('')
 const loginCaptchaLoading = ref(false)
-const { loginStatus, username } = storeToRefs(useUserStore())
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -179,12 +178,18 @@ const handleVerify = () => {
   }
 }
 
+const userStore = useUserStore()
+const { loginStatus, username } = storeToRefs(userStore)
+
 const handleRegister = async () => {
   const result = await oauthRegister(ruleForm)
   if (result.data.code === 200 && result.data.data.code) {
     ElMessage.success('注册成功')
     const code = result.data.data.code
     await handleLogin(code)
+  } else {
+    ElMessage.error(result.data.msg || '注册失败')
+    getOauthCaptcha()
   }
 }
 
@@ -195,9 +200,30 @@ const handleLogin = async (code?: string) => {
     loginStatus.value = true
     const userResult = result.data.data
     localStorage.set('access_token', userResult.access_token)
+    localStorage.set('user_info', userResult.user)
+    userStore.setUserInfo({
+      id: userResult.user.id,
+      uuid: userResult.user.uuid,
+      username: userResult.user.username,
+      nickname: userResult.user.nickname,
+      phone: userResult.user.phone || '',
+      avatar: userResult.user.avatar || '',
+      deptId: userResult.user.dept_id || 0,
+      email: userResult.user.email,
+      isMultiLogin: userResult.user.is_multi_login,
+      isStaff: userResult.user.is_staff,
+      isSuperuser: userResult.user.is_superuser,
+      joinTime: userResult.user.join_time,
+      lastLoginTime: userResult.user.last_login_time,
+      loginStatus: true,
+      token: userResult.access_token
+    })
     username.value = userResult.user.username
     emit('close', false)
-    ElMessage.success('登陆成功')
+    ElMessage.success('登录成功')
+  } else {
+    ElMessage.error(result.data.msg || '登录失败')
+    getOauthCaptcha()
   }
 }
 

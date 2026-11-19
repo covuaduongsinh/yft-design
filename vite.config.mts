@@ -13,22 +13,32 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       host: '0.0.0.0',
       port: 5174,
       proxy: {
-        '/api': {
-          // target: 'https://yft.design',
-          target: 'http://127.0.0.1:8789',
+        '/api/oauth': {
+          target: 'http://127.0.0.1:8788',
           changeOrigin: true,
+          secure: false,
+        },
+        '/api/design/template': {
+          target: 'http://127.0.0.1:8788',
+          changeOrigin: true,
+          secure: false,
+        },
+        '/api': {
+          target: 'https://yft.design',
+          changeOrigin: true,
+          secure: false,
           rewrite: (path) => path.replace(new RegExp('^'), ''),
         },
         '/static': {
-          // target: 'https://yft.design',
-          target: 'http://127.0.0.1:8789',
+          target: 'https://yft.design',
           changeOrigin: true,
+          secure: false,
           rewrite: (path) => path.replace(new RegExp('^'), ''),
         },
         '/yft-static': {
-          // target: 'https://yft.design',
-          target: 'http://127.0.0.1:8789',
+          target: 'https://yft.design',
           changeOrigin: true,
+          secure: false,
           rewrite: (path) => path.replace(new RegExp('^'), ''),
         },
       },

@@ -6,12 +6,29 @@
           <el-col :span="4" class="h-[50px]">
             <img src="@/assets/logo.svg" alt="" class="h-full">
           </el-col>
-          <el-col :span="6" class="flex justify-end col-user">
-            <div v-if="username" class="cursor-pointer">
-              <el-tag>{{ username }}</el-tag>
+          <el-col :span="6" class="flex justify-end col-user items-center">
+            <div v-if="username">
+              <el-dropdown trigger="click">
+                <span class="cursor-pointer flex items-center gap-2 select-none user-dropdown-trigger">
+                  <el-tag :type="userStore.isSuperuser ? 'danger' : (userStore.isStaff ? 'warning' : 'info')" effect="dark" size="small">
+                    {{ userStore.isSuperuser ? 'Admin' : (userStore.isStaff ? 'Staff' : 'User') }}
+                  </el-tag>
+                  <span class="font-semibold text-[#333]">{{ username }}</span>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item disabled>
+                      <span class="text-xs text-gray-500">{{ userStore.email }}</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item divided @click="handleLogout" class="btn-logout">
+                      Đăng xuất
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
             <div v-else>
-              <el-button type="primary" @click="handleLoginDialog(true)">登陆/注册</el-button>
+              <el-button type="primary" @click="handleLoginDialog(true)">登录/注册</el-button>
             </div>
           </el-col>
         </el-row>
@@ -98,6 +115,11 @@ const handleScroll = throttle(async () => {
 
 const handleLoginDialog = (status: boolean) => {
   loginVisible.value = status
+}
+
+const handleLogout = () => {
+  userStore.logout()
+  ElMessage.success('Đã đăng xuất tài khoản')
 }
 
 const setItemStyle = (img: HTMLImageElement, index: number) => {

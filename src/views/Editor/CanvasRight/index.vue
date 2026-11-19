@@ -1,18 +1,36 @@
 <template>
   <div>
     <div class="right-top">
-      <div class="flex align-middle px-[8px]">
+      <div class="flex items-center px-[8px] gap-2">
         <Lang />
+        <div v-if="userStore.username">
+          <el-dropdown trigger="click">
+            <span class="cursor-pointer select-none">
+              <el-tag size="small" :type="userStore.isSuperuser ? 'danger' : (userStore.isStaff ? 'warning' : 'info')" effect="plain">
+                {{ userStore.username }}
+              </el-tag>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item disabled>
+                  <span class="text-xs text-gray-500">{{ userStore.email }} ({{ userStore.isSuperuser ? 'Admin' : (userStore.isStaff ? 'Staff' : 'User') }})</span>
+                </el-dropdown-item>
+                <el-dropdown-item divided @click="handleLogout">
+                  Đăng xuất
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+        <div v-else>
+          <el-button size="small" text type="primary" @click="loginDialogVisible = true">登录</el-button>
+        </div>
       </div>
       <div>
         <el-button text>分享</el-button>
         <el-button type="primary" @click="exportFile">下载</el-button>
         <el-button text href="https://github.com/dromara/yft-design" tag="a" target="_blank" rel="noopener noreferrer">
-          <!-- <a href="https://github.com/dromara/yft-design" target="_blank" rel="noopener noreferrer"> -->
-            <!-- <el-tooltip placement="top" :hide-after="0" :content="t('message.github')"> -->
-            <IconGithub class="footer-button"></IconGithub>
-            <!-- </el-tooltip> -->
-          <!-- </a> -->
+          <IconGithub class="footer-button"></IconGithub>
         </el-button>
       </div>
     </div>
@@ -33,13 +51,15 @@
       </div>
     </div>
     <FileExport v-model:visible="exportFileDialog" @close="exportFileHide" @save="exportFileHandle" />
+    <LoginDialog :visible="loginDialogVisible" @close="loginDialogVisible = false" />
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, watch } from "vue";
+import { computed, watch, ref } from "vue";
 import { RightStates, ElementNames } from "@/types/elements";
 import { storeToRefs } from "pinia";
-import { useMainStore } from "@/store/modules/main";
+import { useMainStore, useUserStore } from "@/store";
+import LoginDialog from "@/components/LoginDialog/index.vue";
 import Lang from "@/components/Lang/index.vue";
 import CanvasStylePanel from "./CanvasStylePanel/index.vue";
 import ElemnetStylePanel from "./ElementStylePanel/index.vue";
@@ -49,8 +69,15 @@ import useI18n from "@/hooks/useI18n";
 const { t } = useI18n();
 
 const mainStore = useMainStore();
+const userStore = useUserStore();
+const loginDialogVisible = ref(false);
 const { canvasObject, rightState } = storeToRefs(mainStore);
 const exportFileDialog = ref(false)
+
+const handleLogout = () => {
+  userStore.logout();
+  ElMessage.success('Đã đăng xuất tài khoản');
+}
 
 
 const exportFileHide = () => {

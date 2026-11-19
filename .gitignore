@@ -25,3 +25,5 @@ dist/*
 dev-dist/*
 types/auto-imports.d.ts
 types/components.d.ts
+.omc
+*.timestamp-*

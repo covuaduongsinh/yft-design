@@ -22,12 +22,12 @@
 <script name="Lang" lang="ts" setup>
 import useI18n from '@/hooks/useI18n'
 import { ref,  } from 'vue'
-import { LANG } from '@/configs/key'
-import { setLocal, getLocal } from '@/utils/local'
+import { LANG, LANG_CHOSEN } from '@/configs/key'
+import { setLocal } from '@/utils/local'
 
 const {  changeLocale }= useI18n()
 const LANGMAP: Record<string, string> = {
-  zh: '中文',
+  vi: 'Tiếng Việt',
   en: 'English',
 };
 
@@ -41,10 +41,9 @@ const langList = ref(
 
 
 const onDropdown = (command: string) => {
-  console.log(command)
   changeLocale(command);
   setLocal(LANG, command);
-  // console.log(getLocal(LANG))
+  setLocal(LANG_CHOSEN, true);
 }
 </script>
 

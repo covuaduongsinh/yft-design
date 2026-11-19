@@ -8,25 +8,28 @@
  */
 
 import { createI18n } from 'vue-i18n';
-import { LANG } from '@/configs/key'
+import { LANG, LANG_CHOSEN } from '@/configs/key'
 import { getLocal, setLocal } from '@/utils/local';
 import type { App } from 'vue';
 import type { I18n, I18nOptions } from 'vue-i18n';
 
 export let i18n: I18n | undefined;
 
-const getLocalLang = () => {
-  let localLang = getLocal(LANG);
-  if (!localLang) {
-    let defaultLang = navigator.language;
-    if (defaultLang) {
-      const _lang = defaultLang.split('-')[0]
-      defaultLang = _lang;
-      localLang = _lang;
-      setLocal(LANG, _lang)
+const supportedLangs = ['vi', 'en', 'zh'];
+const DEFAULT_LANG = 'vi';
+
+// Chỉ tin giá trị CACHE_LANG khi người dùng đã tự chọn (có CACHE_LANG_CHOSEN).
+// Không tự ghi localStorage khi lấy mặc định; giá trị hỏng hoặc ngôn ngữ không còn hỗ trợ quay về 'vi'.
+const getLocalLang = (): string => {
+  try {
+    if (getLocal(LANG_CHOSEN)) {
+      const localLang = getLocal(LANG);
+      if (supportedLangs.includes(localLang)) return localLang;
     }
+  } catch (e) {
+    // localStorage bị chặn hoặc giá trị không phải JSON hợp lệ
   }
-  return localLang;
+  return DEFAULT_LANG;
 }
 
 const createI18nOptions = (): I18nOptions => {
@@ -40,6 +43,7 @@ const createI18nOptions = (): I18nOptions => {
   return {
     legacy: false,
     locale,
+    fallbackLocale: 'en',
     messages,
     allowComposition: true,
     globalInjection: true,
@@ -56,6 +60,7 @@ const setI18nLanguage = (locale: string) => {
     (i18n?.global.locale as any).value = locale;
   }
   setLocal(LANG, locale);
+  document.documentElement.setAttribute('lang', locale);
 }
 
 export const changeLocale = async (locale: string) => {
@@ -69,14 +74,15 @@ export const changeLocale = async (locale: string) => {
 
 export const setupI18n = async (app: App) => {
   const options = createI18nOptions();
-  console.log(options)
   i18n = createI18n(options) as I18n;
+  document.documentElement.setAttribute('lang', options.locale as string);
   app.use(i18n);
 }
 
-export const i18nObj = () => {
-  const localeData = createI18nOptions()
-  return createI18n(localeData)
-} 
+// Trả về instance dùng chung để theo đúng ngôn ngữ đang chọn;
+// chỉ tạo instance mới khi gọi trước setupI18n.
+export const i18nObj = (): I18n => {
+  return i18n ?? (createI18n(createI18nOptions()) as I18n)
+}
 
   

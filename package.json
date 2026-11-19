@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "dev": "vite",
+    "server": "node server/index.mjs",
     "build": "vite build",
     "deploy": "bash deploy.sh"
   },
@@ -94,5 +95,13 @@
   },
   "volta": {
     "node": "18.19.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "canvas",
+      "core-js",
+      "esbuild",
+      "vue-demi"
+    ]
   }
 }

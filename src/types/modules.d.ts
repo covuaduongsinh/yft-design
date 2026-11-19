@@ -355,5 +355,5 @@ declare interface Window {
 
 declare module 'changedpi';
 declare module 'vue-router';
-declare module 'element-plus/dist/locale/zh-cn.mjs';
+declare module 'element-plus/dist/locale/vi.mjs';
 declare module 'element-plus/dist/locale/en.mjs'

@@ -1,5 +1,5 @@
 <template>
-  <el-config-provider :locale="locale.el">
+  <el-config-provider :locale="locale?.el">
     <Computer v-if="!isMobile()" />
     <Mobile v-else />
   </el-config-provider>
