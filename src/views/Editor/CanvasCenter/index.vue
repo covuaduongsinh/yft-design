@@ -67,7 +67,7 @@ const initRouter = async (templateId?: number) => {
 onMounted(async () => {
   const query = router.currentRoute.value.query
   initRouter(query.template)
-  initEditor(query.template)
+  initEditor(Number(query.template) > 0)
   document.addEventListener('keydown', keydownListener)
   document.addEventListener('keyup', keyupListener)
   window.addEventListener('blur', keyupListener)

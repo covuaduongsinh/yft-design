@@ -154,9 +154,11 @@ export default () => {
   }
 
   // 导出json
+  // Xuất cả tài liệu: một trang thì là một đối tượng, nhiều trang thì là một mảng —
+  // cả hai dạng đều nhập lại được bằng "Nhập tệp".
   const exportJSON = () => {
-    const serializer = getJSONData()
-    const blob = new Blob([JSON.stringify(serializer)])
+    const pages = useTemplatesStore().snapshotDocument()
+    const blob = new Blob([JSON.stringify(pages.length === 1 ? pages[0] : pages)])
     saveAs(blob, `yft-design-${Date.now()}.json`)
   }
 

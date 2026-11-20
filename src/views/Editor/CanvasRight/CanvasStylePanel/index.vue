@@ -325,6 +325,7 @@ const changeTemplateClip = async () => {
 // 修改安全尺寸
 const changeTemplateSafe = async () => {
   safe.value = Number(safe.value);
+  templatesStore.commitCurrentPage();
   await templatesStore.renderTemplate();
 };
 

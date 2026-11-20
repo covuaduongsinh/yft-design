@@ -26,6 +26,8 @@ export default () => {
     if (oldIndex === newIndex) return
     const element = queryElement(option.id)
     if (!element) return
+    // Thứ tự lớp được sắp trong store rồi vẽ lại, nên store phải có chỉnh sửa mới nhất trước.
+    templatesStore.commitCurrentPage()
     if (element.group) {
       const elementGroup = queryOption((element.group as GroupElement).id) as GroupElement | undefined
       if (!elementGroup) return
@@ -203,6 +205,8 @@ export default () => {
     canvas.remove(...activeObjects)
     canvas.add(group)
     templatesStore.addElement(group)
+    // Nhóm vừa tạo chỉ mới có trên canvas: ghi về store trước khi vẽ lại từ store.
+    templatesStore.commitCurrentPage()
     templatesStore.renderElement()
   }
 

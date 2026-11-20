@@ -1,5 +1,6 @@
 import { watch } from 'vue'
 import { storeToRefs } from 'pinia'
+import { debounce } from 'lodash-es'
 import { Canvas, FabricObject, Textbox, Group, Point, IText, Line, ModifiedEvent } from 'fabric'
 import { WorkSpaceThumbType, WorkSpaceDrawType, propertiesToInclude } from "@/configs/canvas"
 import { useFabricStore } from '@/store/modules/fabric'
@@ -119,43 +120,64 @@ const initEvent = () => {
   if (!canvas) return
   const templatesStore = useTemplatesStore()
   const { templateId } = storeToRefs(templatesStore)
-  canvas.on('object:modified', (e: ModifiedEvent) => {
-    const { transform, action } = e; 
+  // Một số đối tượng tự phát 'object:modified' không kèm dữ liệu (ArcText, ReferenceLine),
+  // nên không được giả định sự kiện luôn có `transform`.
+  canvas.on('object:modified', (e?: Partial<ModifiedEvent>) => {
     const target = canvas?._activeObject?.toObject(propertiesToInclude)
-    const index = canvas?._objects.findIndex(item => item.id === target.id)
-    if (!index) return
+    if (!target) return
+    const index = canvas?._objects.findIndex(item => item.id === target.id) ?? -1
+    // index 0 là khung vùng làm việc, không ghi lịch sử cho nó.
+    if (index <= 0) return
     const data: Snapshot = {
       type: SnapshotType.MODIFY,
       index,
       target,
-      transform,
-      action,
+      transform: e?.transform,
+      action: e?.action,
       tid: templateId.value
     };
     const { addHistorySnapshot } = useHistorySnapshot()
     addHistorySnapshot(data)
   })
+
+  // Ghi chỉnh sửa trên canvas về store khi canvas đã "yên": mọi thay đổi nhìn thấy được
+  // đều đi qua một lần render, kể cả những thay đổi không phát sự kiện 'object:modified'
+  // (bảng thuộc tính, thứ tự lớp, nền, hoàn tác...).
+  const commitWhenIdle = debounce(() => templatesStore.commitCurrentPage(), 500, { maxWait: 3000 })
+  canvas.on('after:render', commitWhenIdle)
 }
 
 // 初始化模板
-const initTemplate = async (templateId?: number) => {
+const initTemplate = async (skipDefault?: boolean) => {
   if (!canvas) return
   const { initCommon } = useCommon()
   const templatesStore = useTemplatesStore()
   const { currentTemplate } = storeToRefs(templatesStore)
-  if (templateId && Number(templateId) > 0) return
-  await canvas.loadFromJSON(currentTemplate.value)
-  setCanvasTransform()
-  initCommon()
-  initEvent()
+  // Sẽ mở một template/thiết kế từ server: không vẽ tài liệu mẫu mặc định.
+  if (skipDefault) return
+  await templatesStore.withCanvasLoading(async (target) => {
+    await target.loadFromJSON(currentTemplate.value)
+    setCanvasTransform()
+    initCommon()
+  })
 }
 
-export const initEditor = async (templateId?: number) => {
+/**
+ * @param skipDefault true khi trang sẽ tự nạp một tài liệu khác ngay sau đó
+ */
+export const initEditor = async (skipDefault?: boolean) => {
   const fabricStore = useFabricStore()
   const { wrapperRef } = storeToRefs(fabricStore)
   initConf()
   initCanvas()
-  initTemplate(templateId)
+  useTemplatesStore().resetCanvasBinding()
+  if (import.meta.env.DEV) {
+    // Chỉ có ở bản dev: cho phép kiểm thử tự động đọc canvas và store từ console.
+    (window as any).__yftDebug = { canvas: () => canvas, templates: () => useTemplatesStore() }
+  }
+  // Đăng ký sự kiện ngay khi có canvas; trước đây bị bỏ qua nếu mở bằng ?template=...
+  initEvent()
+  initTemplate(skipDefault)
   const { width, height } = useElementBounding(wrapperRef.value)
   watch([width, height], () => {
     setCanvasTransform()

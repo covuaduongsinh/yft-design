@@ -154,7 +154,8 @@ export default () => {
   // 拖拽调整页面顺序同步数据
   const sortTemplates = (newIndex: number, oldIndex: number) => {
     if (oldIndex === newIndex) return
-  
+
+    templatesStore.commitCurrentPage()
     const _templates = JSON.parse(JSON.stringify(templates.value))
     const _template = _templates[oldIndex]
     _templates.splice(oldIndex, 1)
