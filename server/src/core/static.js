@@ -31,6 +31,7 @@ export const mimeOf = (file) => MIME[path.extname(file).toLowerCase()] || 'appli
  * tìm cách thoát ra ngoài (vd "../../etc/passwd").
  */
 export function resolveInside(root, relative) {
+  if (!relative || typeof relative !== 'string') return null;
   let decoded;
   try {
     decoded = decodeURIComponent(relative);

@@ -158,10 +158,28 @@ export function createStockService({ db, config, media, assets, fetchImpl = fetc
     } catch {
       throw badRequest('import_failed', 'Không tải được ảnh từ Pixabay');
     }
-    if (!response.ok) throw badRequest('import_failed', 'Không tải được ảnh từ Pixabay');
     const declared = Number(response.headers.get('content-length') || 0);
     if (declared > config.maxUploadBytes) throw tooLarge('Ảnh quá lớn');
-    const buffer = Buffer.from(await response.arrayBuffer());
+    let buffer;
+    if (response.body && typeof response.body.getReader === 'function') {
+      const reader = response.body.getReader();
+      const chunks = [];
+      let total = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        total += value.length;
+        if (total > config.maxUploadBytes) {
+          await reader.cancel().catch(() => {});
+          throw tooLarge('Ảnh quá lớn');
+        }
+        chunks.push(value);
+      }
+      buffer = Buffer.concat(chunks);
+    } else {
+      buffer = Buffer.from(await response.arrayBuffer());
+      if (buffer.length > config.maxUploadBytes) throw tooLarge('Ảnh quá lớn');
+    }
     return assets.upload(userId, buffer, 'pixabay');
   }
 

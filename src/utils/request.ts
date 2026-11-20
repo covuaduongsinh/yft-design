@@ -38,7 +38,11 @@ const service = axios.create({
 
 service.interceptors.request.use((config) => {
   const token = localStorage.get('access_token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  const isRelative = !config.url || !/^(?:https?:)?\/\//i.test(config.url)
+  if (token && isRelative) {
+    config.headers = config.headers || {}
+    config.headers.Authorization = `Bearer ${token}`
+  }
   return config
 });
 

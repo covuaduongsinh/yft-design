@@ -25,19 +25,23 @@ export function safeEqual(a, b) {
  * (TRUST_PROXY_HOPS), và chỉ lấy đúng mục do proxy tin cậy ngoài cùng ghi vào.
  */
 export function clientIp(c, trustProxyHops) {
+  let ip;
   if (trustProxyHops > 0) {
     const forwarded = (c.req.header('x-forwarded-for') || '')
       .split(',')
       .map((part) => part.trim())
       .filter(Boolean);
     const picked = forwarded[forwarded.length - trustProxyHops];
-    if (picked) return picked;
+    if (picked) ip = picked;
   }
-  try {
-    return getConnInfo(c).remote.address || 'unknown';
-  } catch {
-    return 'unknown'; // gọi app trực tiếp trong test, không có socket
+  if (!ip) {
+    try {
+      ip = getConnInfo(c).remote.address || 'unknown';
+    } catch {
+      ip = 'unknown'; // gọi app trực tiếp trong test, không có socket
+    }
   }
+  return ip.replace(/^::ffff:/, '');
 }
 
 /**

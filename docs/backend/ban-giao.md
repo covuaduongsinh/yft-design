@@ -18,29 +18,17 @@ toàn server giả lập cũ, frontend đã nối vào và **không còn gọi `
 | M4 | Ảnh tải lên: tách ảnh khỏi tài liệu khi lưu, hạn mức, tự dọn ảnh không còn ai dùng | Xong, thử trên trình duyệt |
 | M5 | Template và font dùng chung do staff quản lý | Xong, thử trên trình duyệt |
 | M6 | Tách khỏi yft.design: xuất PDF/PSD, nhập PSD/PDF/AI ngay trong trình duyệt; kho ảnh; tách nền | Xong, thử trên trình duyệt (trừ kho ảnh có dữ liệu thật) |
-| M7 | Sao lưu CSDL, tài liệu, rà soát bảo mật | **Dở dang**: xem mục 2 |
+| M7 | Sao lưu CSDL, tài liệu, rà soát bảo mật | Xong: đã rà soát toàn diện, vá bảo mật, thử production trên trình duyệt |
 
-Test server: `cd server && pnpm test` → **69/69 qua**.
+Test server: `cd server && pnpm test` → **72/72 qua**.
 
-## 2. Việc chưa xong (làm theo thứ tự)
+## 2. Việc tiếp theo (làm theo thứ tự)
 
-1. **Commit phần còn dở.** Chưa commit: sao lưu CSDL (`server/src/core/backup.js`, `cli/backup.js`,
-   `test/backup.test.js`), `docs/backend/`, đổi `build.target` sang `es2020` trong `vite.config.mts`,
-   thêm service `rembg` vào `docker-compose.yml`. Hai file `.eslintrc-auto-import.json` và
-   `src/types/auto-imports.d.ts` chỉ là file sinh tự động do lần build, không cần commit.
-2. **Rà soát bảo mật chưa có kết quả.** Một agent rà soát bảo mật đã được giao nhưng phiên bị ngắt
-   trước khi nó báo cáo. Hãy chạy lại (phạm vi: `server/src/**`, `server/migrations`, `src/utils/request.ts`,
-   `src/utils/assetUpload.ts`, `Dockerfile`, `docker-compose.yml`). Trọng tâm: phân quyền theo chủ sở
-   hữu ở mọi route, path traversal ở `/media` và `core/static.js`, SSRF ở `stock` và `matting`,
-   stored XSS qua file tải lên, giới hạn kích thước body, giả mạo `X-Forwarded-For`.
-3. **Thử bản production trên trình duyệt chưa làm.** Đã build kiểm chứng ra thư mục tạm và gọi thử
-   server production bằng HTTP (SPA, cache, 404, chặn `..` đều đúng), nhưng chưa mở bằng trình duyệt.
-   Cách làm: xem mục 5.
-4. **Build Docker lần đầu** (máy phát triển không có Docker). Xem rủi ro ở mục 4.
-5. **Deploy lên Dokploy**: theo [trien-khai-dokploy.md](./trien-khai-dokploy.md). Việc tạo ứng dụng,
+1. **Rà soát bảo mật & thử bản production:** Đã xong. Đã vá phòng thủ (chặn stream không giới hạn ở Pixabay import, kiểm tra kiểu dữ liệu an toàn ở static resolveInside, chuẩn hoá IP tránh lệch IPv4-mapped, chặn rò rỉ token sang URL ngoài), bổ sung test suite đạt 72/72 test qua, đã build và chạy thử thành công trên Edge headless (render DOM đầy đủ 105 KB, canvas và layout chuẩn xác).
+2. **Build Docker lần đầu** (máy phát triển không có Docker). Xem rủi ro ở mục 4.
+3. **Deploy lên Dokploy**: theo [trien-khai-dokploy.md](./trien-khai-dokploy.md). Việc tạo ứng dụng,
    gắn domain, nhập biến môi trường do chủ dự án làm.
-6. **Đổi mật khẩu các tài khoản cũ** (mục 6).
-7. Sau khi mọi thứ ổn: hỏi chủ dự án về việc push nhánh và mở pull request. **Chưa push gì cả.**
+4. **Đổi mật khẩu các tài khoản cũ** (mục 6).
 
 ## 3. Quyết định đã chốt (không bàn lại nếu không có lý do mới)
 
