@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { localStorage } from '@/utils/storage'
+import type { UserResult, YFTUser } from '@/api/oauth/types'
 
 export interface UserState {
   id: number
@@ -17,50 +18,55 @@ export interface UserState {
   lastLoginTime: string
   loginStatus: boolean
   token: string
+  /** Bật lên khi server trả 401: nơi chứa hộp đăng nhập sẽ mở hộp rồi tắt cờ này. */
+  loginRequired: boolean
 }
+
+const emptyState = (): UserState => ({
+  id: 0,
+  uuid: '',
+  username: '',
+  nickname: '',
+  phone: '',
+  avatar: '',
+  deptId: 0,
+  email: '',
+  isMultiLogin: false,
+  isStaff: false,
+  isSuperuser: false,
+  joinTime: '',
+  lastLoginTime: '',
+  loginStatus: false,
+  token: '',
+  loginRequired: false,
+})
+
+const fromServerUser = (user: Partial<YFTUser> & Record<string, any>, token: string): UserState => ({
+  id: user.id || 0,
+  uuid: user.uuid || '',
+  username: user.username || '',
+  nickname: user.nickname || '',
+  phone: user.phone || '',
+  avatar: user.avatar || '',
+  deptId: user.dept_id || user.deptId || 0,
+  email: user.email || '',
+  isMultiLogin: !!user.is_multi_login,
+  isStaff: !!user.is_staff,
+  isSuperuser: !!user.is_superuser,
+  joinTime: user.join_time || '',
+  lastLoginTime: user.last_login_time || '',
+  loginStatus: true,
+  token,
+  loginRequired: false,
+})
 
 const getInitialUserState = (): UserState => {
   try {
     const saved = localStorage.get('user_info')
     const token = localStorage.get('access_token')
-    if (saved && token) {
-      return {
-        id: saved.id || 0,
-        uuid: saved.uuid || '',
-        username: saved.username || '',
-        nickname: saved.nickname || '',
-        phone: saved.phone || '',
-        avatar: saved.avatar || '',
-        deptId: saved.dept_id || saved.deptId || 0,
-        email: saved.email || '',
-        isMultiLogin: !!saved.is_multi_login,
-        isStaff: !!saved.is_staff,
-        isSuperuser: !!saved.is_superuser,
-        joinTime: saved.join_time || '',
-        lastLoginTime: saved.last_login_time || '',
-        loginStatus: true,
-        token: token
-      }
-    }
+    if (saved && token) return fromServerUser(saved, token)
   } catch (_) {}
-
-  return {
-    id: 0,
-    uuid: '',
-    username: '',
-    nickname: '',
-    phone: '',
-    avatar: '',
-    deptId: 0,
-    email: '',
-    isMultiLogin: false,
-    isStaff: false,
-    isSuperuser: false,
-    joinTime: '',
-    lastLoginTime: '',
-    loginStatus: false,
-    token: ''
-  }
+  return emptyState()
 }
 
 export const useUserStore = defineStore('user', {
@@ -73,24 +79,32 @@ export const useUserStore = defineStore('user', {
     setUserInfo(user: Partial<UserState>) {
       Object.assign(this, user)
     },
-    logout() {
-      this.id = 0
-      this.uuid = ''
-      this.username = ''
-      this.nickname = ''
-      this.phone = ''
-      this.avatar = ''
-      this.deptId = 0
-      this.email = ''
-      this.isMultiLogin = false
-      this.isStaff = false
-      this.isSuperuser = false
-      this.joinTime = ''
-      this.lastLoginTime = ''
-      this.loginStatus = false
-      this.token = ''
+    /** Ghi nhận phiên đăng nhập do server trả về (đăng nhập hoặc đăng ký). */
+    applySession(session: UserResult) {
+      localStorage.set('access_token', session.access_token)
+      localStorage.set('user_info', session.user)
+      Object.assign(this, fromServerUser(session.user, session.access_token))
+    },
+    /** Cập nhật thông tin và quyền theo dữ liệu mới nhất từ server. */
+    applyUser(user: YFTUser) {
+      if (!this.token) return
+      localStorage.set('user_info', user)
+      Object.assign(this, fromServerUser(user, this.token))
+    },
+    /** Xoá phiên ở trình duyệt. Muốn thu hồi cả ở server thì dùng useAuth().logout(). */
+    clearSession() {
+      Object.assign(this, emptyState())
       localStorage.remove('access_token')
       localStorage.remove('user_info')
-    }
+    },
+    logout() {
+      this.clearSession()
+    },
+    requireLogin() {
+      this.loginRequired = true
+    },
+    clearLoginRequired() {
+      this.loginRequired = false
+    },
   },
 })

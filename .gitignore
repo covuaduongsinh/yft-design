@@ -27,3 +27,8 @@ types/auto-imports.d.ts
 types/components.d.ts
 .omc
 *.timestamp-*
+
+# Backend: du lieu chay that (CSDL, anh tai len, sao luu) va bien moi truong
+server/data/
+server/.env
+.env

@@ -1,0 +1,32 @@
+# Triển khai yft-design (frontend + backend trong một container).
+#
+# Dokploy: tạo ứng dụng kiểu "Docker Compose" trỏ tới repo này, nhập biến môi
+# trường ở tab Environment (Dokploy ghi chúng vào file .env cạnh file này),
+# rồi gắn domain cho service `app`, cổng 8788, ở tab Domains.
+#
+# Chạy thử không qua Dokploy: sao chép .env.example thành .env, thêm
+#   ports: ["8788:8788"]
+# vào service `app`, rồi `docker compose up -d --build`.
+
+services:
+  app:
+    build: .
+    image: yft-design:latest
+    restart: unless-stopped
+    init: true                      # để SIGTERM tới được Node và đóng CSDL gọn gàng
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Traefik của Dokploy là 1 proxy đứng trước; cần đúng số này để giới hạn
+      # tần suất và khoá tạm tính theo IP thật của người dùng.
+      TRUST_PROXY_HOPS: ${TRUST_PROXY_HOPS:-1}
+    volumes:
+      # Named volume: Dokploy giữ nguyên qua các lần deploy và sao lưu được.
+      # KHÔNG đổi thành bind mount tuyệt đối — Dokploy sẽ dọn nó khi deploy lại.
+      - yft-data:/data
+    expose:
+      - "8788"
+
+volumes:
+  yft-data:

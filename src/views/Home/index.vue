@@ -7,29 +7,7 @@
             <img src="@/assets/logo.svg" alt="" class="h-full">
           </el-col>
           <el-col :span="6" class="flex justify-end col-user items-center">
-            <div v-if="username">
-              <el-dropdown trigger="click">
-                <span class="cursor-pointer flex items-center gap-2 select-none user-dropdown-trigger">
-                  <el-tag :type="userStore.isSuperuser ? 'danger' : (userStore.isStaff ? 'warning' : 'info')" effect="dark" size="small">
-                    {{ userStore.isSuperuser ? 'Admin' : (userStore.isStaff ? 'Staff' : 'User') }}
-                  </el-tag>
-                  <span class="font-semibold text-[#333]">{{ username }}</span>
-                </span>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item disabled>
-                      <span class="text-xs text-gray-500">{{ userStore.email }}</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item divided @click="handleLogout" class="btn-logout">
-                      Đăng xuất
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </div>
-            <div v-else>
-              <el-button type="primary" @click="handleLoginDialog(true)">Đăng nhập / Đăng ký</el-button>
-            </div>
+            <UserMenu />
           </el-col>
         </el-row>
       </el-header>
@@ -73,7 +51,6 @@
         </el-main>
       </el-container>
     </el-container>
-    <LoginDialog :visible="loginVisible" @close="handleLoginDialog" />
   </div>
 </template>
 
@@ -86,13 +63,9 @@ import { TemplateItem } from '@/api/template/types'
 import { throttle } from 'lodash-es'
 import { PageSize } from "@/configs/size"
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/store';
-import { storeToRefs } from 'pinia';
+import UserMenu from '@/components/UserMenu/index.vue'
 
 const router = useRouter()
-const userStore = useUserStore()
-const loginVisible = ref(false)
-const { loginStatus, username } = storeToRefs(userStore)
 const resultReactive = reactive({
   loading: false,
   page: 1,
@@ -112,15 +85,6 @@ const handleScroll = throttle(async () => {
     }
   }
 }, 300)
-
-const handleLoginDialog = (status: boolean) => {
-  loginVisible.value = status
-}
-
-const handleLogout = () => {
-  userStore.logout()
-  ElMessage.success('Đã đăng xuất tài khoản')
-}
 
 const setItemStyle = (img: HTMLImageElement, index: number) => {
   if (!img) return;

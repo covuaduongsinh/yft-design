@@ -14,7 +14,8 @@ export const createVitePlugins = (
 ): (PluginOption | PluginOption[])[] => {
   return [
     vue(),
-    visualizer({ open: true }),
+    // Trong CI/Docker không có trình duyệt để mở trang thống kê bundle.
+    visualizer({ open: !process.env.CI }),
     viteCompression({
       verbose: true,
       disable: false,

@@ -13,12 +13,14 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       host: '0.0.0.0',
       port: 5174,
       proxy: {
-        '/api/oauth': {
+        // Backend của dự án (pnpm server). Các nhóm API bên dưới đã do server này phục vụ;
+        // phần còn lại tạm thời vẫn chuyển sang server gốc cho tới khi được thay thế.
+        '^/api/(oauth|admin|health|design/(config|template|designs|assets|stock|font))': {
           target: 'http://127.0.0.1:8788',
           changeOrigin: true,
           secure: false,
         },
-        '/api/design/template': {
+        '/media': {
           target: 'http://127.0.0.1:8788',
           changeOrigin: true,
           secure: false,

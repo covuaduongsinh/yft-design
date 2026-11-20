@@ -1,16 +1,18 @@
 import request from '@/utils/request'
 import { AxiosPromise } from 'axios'
-import { 
-  OauthWechatResult, 
-  ImageCaptchaResult, 
+import {
+  ImageCaptchaResult,
   EmailCaptchaResult,
-  OauthVerifyData, 
-  OauthCheckData,
-  OauthGithubResult, 
-  CodeParams, 
+  OauthVerifyData,
   EmailData,
   OauthUserResult,
-  OauthRegisterResult
+  MeResult,
+  PasswordChangeData,
+  AppConfigResult,
+  AdminUserListResult,
+  AdminUserPatch,
+  AdminUserResult,
+  BaseResult,
 } from './types'
 
 
@@ -29,11 +31,13 @@ export function emailCaptcha(data: EmailData): AxiosPromise<EmailCaptchaResult> 
   })
 }
 
-export function oauthRegister(data: OauthVerifyData): AxiosPromise<OauthRegisterResult> {
+/** Đăng ký trả về luôn phiên đăng nhập, giống hệt oauthLogin. */
+export function oauthRegister(data: OauthVerifyData): AxiosPromise<OauthUserResult> {
   return request({
     url: '/api/oauth/register',
     method: 'post',
-    data
+    data,
+    silent: true,
   })
 }
 
@@ -41,28 +45,58 @@ export function oauthLogin(data: OauthVerifyData): AxiosPromise<OauthUserResult>
   return request({
     url: '/api/oauth/login',
     method: 'post',
-    data
+    data,
+    silent: true,
   })
 }
 
-export function oauthWechat(): AxiosPromise<OauthWechatResult> {
+/** Thu hồi token hiện tại ở server. */
+export function oauthLogout(): AxiosPromise<BaseResult> {
   return request({
-    url: '/api/oauth/token/wechat',
+    url: '/api/oauth/logout',
     method: 'post',
+    silent: true,
   })
 }
 
-export function oauthTokenGithub(): AxiosPromise<OauthGithubResult> {
+export function oauthMe(): AxiosPromise<MeResult> {
   return request({
-    url: '/api/oauth/github/token',
+    url: '/api/oauth/me',
     method: 'get',
+    silent: true,
   })
 }
 
-export function oauthCallbackGithub(params: CodeParams): AxiosPromise<OauthUserResult> {
+export function changePassword(data: PasswordChangeData): AxiosPromise<BaseResult> {
   return request({
-    url: '/api/oauth/github/callback',
+    url: '/api/oauth/password/change',
+    method: 'post',
+    data,
+    silent: true,
+  })
+}
+
+/** Cấu hình công khai của server: tính năng nào đang bật. */
+export function getAppConfig(): AxiosPromise<AppConfigResult> {
+  return request({
+    url: '/api/design/config',
+    method: 'get',
+    silent: true,
+  })
+}
+
+export function adminListUsers(params: { q?: string, page?: number, size?: number }): AxiosPromise<AdminUserListResult> {
+  return request({
+    url: '/api/admin/users',
     method: 'get',
     params,
+  })
+}
+
+export function adminUpdateUser(id: number, data: AdminUserPatch): AxiosPromise<AdminUserResult> {
+  return request({
+    url: `/api/admin/users/${id}`,
+    method: 'patch',
+    data,
   })
 }

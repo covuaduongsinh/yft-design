@@ -7,7 +7,9 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AdminUsersDialog: typeof import('./../components/UserMenu/AdminUsersDialog.vue')['default']
     Alpha: typeof import('./../components/ColorPicker/Alpha.vue')['default']
+    ChangePasswordDialog: typeof import('./../components/UserMenu/ChangePasswordDialog.vue')['default']
     Checkboard: typeof import('./../components/ColorPicker/Checkboard.vue')['default']
     ColorButton: typeof import('./../components/ColorButton.vue')['default']
     ColorPicker: typeof import('./../components/ColorPicker/index.vue')['default']
@@ -43,6 +45,7 @@ declare module 'vue' {
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     ElOption: typeof import('element-plus/es')['ElOption']
     ElOptionGroup: typeof import('element-plus/es')['ElOptionGroup']
+    ElPagination: typeof import('element-plus/es')['ElPagination']
     ElPopover: typeof import('element-plus/es')['ElPopover']
     ElRadio: typeof import('element-plus/es')['ElRadio']
     ElRadioButton: typeof import('element-plus/es')['ElRadioButton']
@@ -51,6 +54,8 @@ declare module 'vue' {
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElSlider: typeof import('element-plus/es')['ElSlider']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
+    ElTable: typeof import('element-plus/es')['ElTable']
+    ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
@@ -85,6 +90,7 @@ declare module 'vue' {
     SvgIcon: typeof import('./../components/SvgIcon/index.vue')['default']
     SwipeInput: typeof import('./../components/SwipeInput.vue')['default']
     TextColorButton: typeof import('./../components/TextColorButton.vue')['default']
+    UserMenu: typeof import('./../components/UserMenu/index.vue')['default']
   }
   export interface ComponentCustomProperties {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']

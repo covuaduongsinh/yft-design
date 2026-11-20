@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "server": "node server/index.mjs",
+    "server": "node server/src/index.js",
     "build": "vite build",
     "deploy": "bash deploy.sh"
   },
