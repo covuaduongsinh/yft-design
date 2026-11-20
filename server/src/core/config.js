@@ -118,9 +118,11 @@ export function publicConfig(config) {
     password_min_length: config.passwordMinLength,
     max_upload_bytes: config.maxUploadBytes,
     max_design_document_bytes: config.maxDesignDocumentBytes,
+    // Tính năng tuỳ chọn đang bật ở máy chủ này, để giao diện ẩn phần không dùng được.
     features: {
       stock_pixabay: Boolean(config.pixabayApiKey),
       matting: Boolean(config.mattingUrl),
+      email: Boolean(config.smtpUrl),
     },
   };
 }

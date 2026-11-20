@@ -9,7 +9,7 @@
       </div>
       <template #tip>
         <div class="el-upload__tip">
-          Hỗ trợ các định dạng PSD / PDF / SVG / CDR và ảnh
+          Hỗ trợ các định dạng PSD / PDF / AI (tương thích PDF) / SVG / JSON và ảnh
         </div>
       </template>
     </el-upload>
@@ -17,7 +17,8 @@
 </template>
 
 <script lang="ts" setup>
-import { uploadFile } from '@/api/file'
+import { importDesignFile } from '@/utils/importFile'
+import { ElMessage } from 'element-plus'
 import { propertiesToInclude, WorkSpaceDrawData } from '@/configs/canvas'
 import useCanvasScale from '@/hooks/useCanvasScale'
 import useHandleCreate from '@/hooks/useHandleCreate'
@@ -123,29 +124,19 @@ const uploadHandle = async (option: any) => {
     emit('close')
     return
   }
+  // PSD / PDF / AI được đọc ngay trong trình duyệt, không gửi lên máy chủ nào.
   uploading.value = true
-  const res = await uploadFile(option.file, fileSuffix)
-  uploading.value = false
-  if (res && res.data.code === 200) {
-    const template = res.data.data
-    if (!template) return
-    if (['pdf', 'ai'].includes(fileSuffix)) {
-      // const parseTemplate: Template[] = []
-      // const pdfTemplate = template as any[]
-      // for (let i = 0; i < pdfTemplate.length; i++) {
-      //   const dataText = pdfTemplate[i]
-      //   // const emptyTemplate = await generateSVGTemplate(dataText)
-      //   // parseTemplate.push(emptyTemplate)
-      // }
-      
-      await templatesStore.addTemplate(template)
+  try {
+    const pages = await importDesignFile(option.file)
+    if (pages) {
+      await templatesStore.addTemplate(pages)
       setCanvasTransform()
       emit('close')
-      return
     }
-    await templatesStore.addTemplate(template)
-    setCanvasTransform()
-    emit('close')
+  } catch (error) {
+    ElMessage.error(error instanceof Error && error.message ? error.message : 'Không đọc được tệp này')
+  } finally {
+    uploading.value = false
   }
 }
 

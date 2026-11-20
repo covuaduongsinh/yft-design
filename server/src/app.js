@@ -13,6 +13,10 @@ import { designRoutes } from './designs/routes.js';
 import { createDesignService } from './designs/service.js';
 import { fontRoutes } from './fonts/routes.js';
 import { createFontService } from './fonts/service.js';
+import { registerMattingRoutes } from './matting/routes.js';
+import { createMattingService } from './matting/service.js';
+import { stockListRoutes, stockRoutes } from './stock/routes.js';
+import { createStockService } from './stock/service.js';
 import { templateRoutes } from './templates/routes.js';
 import { createTemplateService } from './templates/service.js';
 import { createMailer } from './auth/mailer.js';
@@ -54,8 +58,12 @@ export function createApp({ config, db, deps = {} }) {
   ];
   const templates = createTemplateService({ db, config, media });
   const fonts = createFontService({ db, config, media });
+  const stock = createStockService({ db, config, media, assets, fetchImpl: deps.fetchImpl });
+  const matting = createMattingService({ config, media, assets, fetchImpl: deps.fetchImpl });
+  maintenance.push(() => stock.purgeCache());
   const ctx = {
-    config, db, auth, guard, limiters, mailer, deps, maintenance, media, storage, designs, assets, templates, fonts,
+    config, db, auth, guard, limiters, mailer, deps, maintenance, media, storage,
+    designs, assets, templates, fonts, stock, matting,
   };
 
   const app = new Hono();
@@ -92,6 +100,16 @@ export function createApp({ config, db, deps = {} }) {
 
   app.use('/api/design/font/*', limitBody(config.maxFontBytes + MiB));
   app.route('/api/design/font', fontRoutes(ctx));
+
+  app.use('/api/design/stock/*', limitBody(config.maxUploadBytes + MiB));
+  app.route('/api/design/stock', stockRoutes(ctx));
+  app.route('/api/design/image', stockListRoutes(ctx, 'image'));
+  app.route('/api/design/illustration', stockListRoutes(ctx, 'illustration'));
+
+  // Ảnh nhúng gửi lên ở dạng base64 nên lớn hơn file gốc khoảng 1/3.
+  app.use('/api/design/matting/*', limitBody(config.maxUploadBytes + MiB));
+  app.use('/api/matting/*', limitBody(Math.ceil(config.maxUploadBytes * 1.4) + MiB));
+  registerMattingRoutes(app, ctx);
 
   if (config.staticDir && fs.existsSync(config.staticDir)) {
     const spa = spaHandler(config.staticDir);

@@ -10,7 +10,8 @@
             <el-button text @click="showTotal(item.type)">{{ $t("message.all") }}<IconRight/></el-button>
           </el-col>
         </el-row>
-        <el-row class="category-box mt-5" v-loading="item.category.length === 0">
+        <el-row class="category-box mt-5" v-loading="item.category.length === 0 && !loaded.has('c:' + item.type)">
+          <span v-if="item.category.length === 0 && loaded.has('c:' + item.type)" class="stock-empty">Chưa có hình</span>
           <div class="box-image" v-for="(img, index) in item.category" :key="index" :style="{ height: (img.previewHeight < 100 ? 100 : img.previewHeight) + 'px' }">
             <!-- <el-tooltip placement="top" :content="img.tags" :hide-after="0"> -->
             <el-image :src="img.previewURL" :alt="img.tags" @click="createImage(img)" lazy loading="lazy"></el-image>
@@ -24,8 +25,10 @@
         <el-col :span="7" class="col-name">
           <el-button text @click="hideTotal()"><IconLeft />{{ categoryData.name }}</el-button>
         </el-col>
+        <StockUpload kind="illustration" :category="categoryData.type" @added="reloadTotal(categoryData.type)" />
       </el-row>
-      <el-row class="total-box mt-5" v-loading="categoryData.total.length === 0">
+      <el-row class="total-box mt-5" v-loading="categoryData.total.length === 0 && !loaded.has('t:' + categoryData.type)">
+        <span v-if="categoryData.total.length === 0 && loaded.has('t:' + categoryData.type)" class="stock-empty">Danh mục này chưa có hình</span>
         <div class="box-image" v-for="(img, index) in categoryData.total" :key="index">
           <!-- <el-tooltip placement="top" :content="img.tags" :hide-after="0"> -->
           <img :src="img.previewURL" :alt="img.tags" @click="createImage(img)" lazy loading="lazy" :ref="(e: any) => setItemStyle(e, index)" />
@@ -40,7 +43,7 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed } from "vue";
 import { debounce, throttle } from "lodash-es";
-import { getIllustrationPages, getIllustrationCategory } from "@/api/static/image";
+import { getIllustrationPages, getIllustrationCategory, resolveStockImageUrl } from "@/api/static/image";
 import { ImageHit } from "@/api/static/types";
 import { useMainStore } from "@/store";
 import { storeToRefs } from "pinia";
@@ -50,6 +53,7 @@ import useHandleCreate from "@/hooks/useHandleCreate";
 import useCanvas from "@/views/Canvas/useCanvas";
 import { Image } from "fabric";
 import useCenter from "@/views/Canvas/useCenter";
+import StockUpload from "./StockUpload.vue";
 const mainStore = useMainStore();
 const { illustrationCategoryType, illustrationCategoryData } = storeToRefs(mainStore);
 const { createImageElement } = useHandleCreate();
@@ -63,13 +67,21 @@ const categoryData = computed(() => {
     (ele) => ele.type === typeRef.value
   )[0];
 });
+// Danh mục đã tải xong ('c:<mã>' = hàng xem nhanh, 't:<mã>' = toàn bộ): để phân biệt
+// "đang tải" với "kho chưa có hình nào".
+const loaded = ref(new Set<string>());
+
 const getImageCategoryData = throttle(
   async (t: string) => {
-    const res = await getIllustrationCategory({ t });
-    if (res && res.data.code === 200) {
+    try {
+      const res = await getIllustrationCategory({ t });
       illustrationCategoryData.value
         .filter((item) => item.type === t)
         .map((ele) => (ele.category = res.data.data));
+    } catch (_) {
+      // request.ts đã hiện thông báo lỗi
+    } finally {
+      loaded.value.add('c:' + t);
     }
   },
   100,
@@ -93,18 +105,27 @@ const setItemStyle = (img: HTMLImageElement, index: number) => {
   };
 }
 
-const getImagePageData = throttle(
-  async (t: string, page: 1) => {
-    const res = await getIllustrationPages({ t, page });
-    if (res && res.data.code === 200) {
-      illustrationCategoryData.value
-        .filter((item) => item.type === t)
-        .map((ele) => (ele.total = res.data.data));
-    }
-  },
-  100,
-  { leading: true, trailing: false }
-);
+const loadTotal = async (t: string) => {
+  try {
+    const res = await getIllustrationPages({ t, page: 1 });
+    illustrationCategoryData.value
+      .filter((item) => item.type === t)
+      .map((ele) => (ele.total = res.data.data));
+  } catch (_) {
+    // request.ts đã hiện thông báo lỗi
+  } finally {
+    loaded.value.add('t:' + t);
+  }
+};
+
+const getImagePageData = throttle((t: string, _page: 1) => loadTotal(t), 100, { leading: true, trailing: false });
+
+// Staff vừa thêm hình vào kho: tải lại danh mục đang xem và hàng xem nhanh của nó.
+const reloadTotal = async (t: string) => {
+  await loadTotal(t);
+  loaded.value.delete('c:' + t);
+  getImageCategoryData(t);
+};
 
 const getContainScroll = () => {
   let startIndex = 0,
@@ -168,11 +189,14 @@ const hideTotal = () => {
   categoryRef.value.scrollTo({ top: categoryTop.value, behavior: "smooth" });
 };
 
-const hideLoading = async (item: ImageHit, loading: Image) => {
+const hideLoading = async (url: string, loading: Image) => {
   const [ canvas ] = useCanvas()
-  await util.loadImage(item.largeImageURL)
-  loading.set({visible: false})
-  canvas.renderAll()
+  try {
+    if (url) await util.loadImage(url)
+  } finally {
+    loading.set({visible: false})
+    canvas.renderAll()
+  }
 }
 
 const createImage = async (item: ImageHit) => {
@@ -181,7 +205,8 @@ const createImage = async (item: ImageHit) => {
   let loading = canvas.loading
   if (!loading) {
     loading = await GifImage.fromURL(new URL(`/src/assets/images/loading.gif`, import.meta.url).href)
-    loading.set({left: centerPoint.x - loading.width / 2, top: centerPoint.y - loading.height / 2})
+    // Hình "đang tải" chỉ là trang trí tạm của giao diện: không được nằm trong tài liệu khi lưu/xuất.
+    loading.set({left: centerPoint.x - loading.width / 2, top: centerPoint.y - loading.height / 2, excludeFromExport: true})
     canvas.add(loading);
     canvas.renderAll()
     canvas.loading = loading
@@ -191,8 +216,9 @@ const createImage = async (item: ImageHit) => {
     canvas.bringObjectToFront(loading)
     canvas.renderAll()
   }
-  await hideLoading(item, loading)
-  createImageElement(item.largeImageURL);
+  const url = await resolveStockImageUrl(item)
+  await hideLoading(url, loading)
+  if (url) createImageElement(url);
 };
 
 onMounted(() => {

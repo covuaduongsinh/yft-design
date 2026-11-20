@@ -39,7 +39,21 @@ export enum ImageType {
   vector,
 }
 
+export interface StockItemResult {
+  code: number
+  msg: string
+  data: ImageHit
+}
+
 export interface ImageHit {
+  /** Ảnh thu nhỏ và kích thước của nó (giao diện tab Ảnh đọc ba trường này). */
+  preview: string
+  width: number
+  height: number
+  /** 'local' = kho của máy chủ này, 'pixabay' = kho ngoài. */
+  source?: 'local' | 'pixabay'
+  /** true = phải nhập về máy chủ trước khi chèn vào thiết kế. */
+  needsImport?: boolean
   id: number
   pageURL: string
   type: ImageType

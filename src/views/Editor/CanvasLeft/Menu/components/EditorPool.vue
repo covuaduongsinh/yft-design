@@ -132,7 +132,7 @@ import { QRCodeType, Template } from "@/types/canvas";
 import { getImageDataURL, getImageText } from "@/utils/image";
 import { LinePoolItems, LinePoolItem } from "@/configs/lines";
 import { loadSVGFromString } from 'fabric'
-import { uploadFile } from '@/api/file'
+import { importDesignFile } from '@/utils/importFile'
 import useCanvasScale from '@/hooks/useCanvasScale'
 import useHandleCreate from '@/hooks/useHandleCreate'
 import useHandleTemplate from '@/hooks/useHandleTemplate'
@@ -263,14 +263,18 @@ const uploadHandle = async (option: any) => {
     const dataURL = URL.createObjectURL(option.file)
     createVideoElement(dataURL)
   }
-  //   uploading.value = true
-  const res = await uploadFile(option.file, fileSuffix);
-  uploading.value = false;
-  if (res && res.data.code === 200) {
-    const template = res.data.data as Template;
-    if (!template) return;
-    await addTemplate(template);
-    setCanvasTransform();
+  // PSD / PDF / AI được đọc ngay trong trình duyệt, không gửi lên máy chủ nào.
+  uploading.value = true;
+  try {
+    const pages = await importDesignFile(option.file);
+    if (pages) {
+      await addTemplate(pages as any);
+      setCanvasTransform();
+    }
+  } catch (error) {
+    ElMessage.error(error instanceof Error && error.message ? error.message : 'Không đọc được tệp này');
+  } finally {
+    uploading.value = false;
   }
 };
 

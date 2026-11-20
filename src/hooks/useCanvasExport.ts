@@ -4,13 +4,20 @@ import { saveAs } from 'file-saver'
 import { storeToRefs } from 'pinia'
 import { useFabricStore, useTemplatesStore } from '@/store'
 import { WorkSpaceThumbType, WorkSpaceClipType, WorkSpaceCommonType, WorkSpaceSafeType, propertiesToInclude } from '@/configs/canvas'
-import { ImageFormat, StaticCanvas } from 'fabric'
-import { downloadSVGFile, downloadLinkFile } from '@/utils/download'
+import { ImageFormat } from 'fabric'
+import { ElMessage } from 'element-plus'
+import { downloadSVGFile } from '@/utils/download'
 import { changeDpiDataUrl } from 'changedpi'
 import useCanvas from '@/views/Canvas/useCanvas'
 import useCenter from '@/views/Canvas/useCenter'
-import { exportFile } from '@/api/file'
 import { ElementNames } from '@/types/elements'
+import { Template } from '@/types/canvas'
+import { renderPage } from '@/utils/pageThumbnail'
+import { px2mm } from '@/utils/image'
+
+// Giới hạn kích thước canvas mà các trình duyệt phổ biến còn xử lý được ổn định.
+const MAX_EXPORT_SIDE = 12000
+const MAX_EXPORT_PIXELS = 80_000_000
 
 export default () => {
   
@@ -103,54 +110,112 @@ export default () => {
     canvas.renderAll()
   }
 
+  // Xuất PDF và PSD được làm ngay trong trình duyệt (trước đây gửi SVG lên máy chủ yft.design).
+  // Mỗi trang được vẽ lại từ dữ liệu tài liệu trên một canvas ẩn, nên giữ đúng font, hiệu ứng
+  // và không phụ thuộc trang nào đang mở.
+
+  /** Tỉ lệ vẽ sao cho ảnh xuất ra không vượt giới hạn canvas của trình duyệt. */
+  const exportScale = (page: Template) => {
+    const width = page.width / page.zoom
+    const height = page.height / page.zoom
+    return Math.min(1, MAX_EXPORT_SIDE / Math.max(width, height), Math.sqrt(MAX_EXPORT_PIXELS / (width * height)))
+  }
+
+  const reportExportError = (error: unknown) => {
+    const tainted = error instanceof DOMException && error.name === 'SecurityError'
+    ElMessage.error(tainted
+      ? 'Không xuất được vì thiết kế có ảnh từ trang web khác. Hãy lưu thiết kế (ảnh sẽ được đưa về máy chủ) rồi xuất lại.'
+      : 'Xuất tệp thất bại')
+  }
+
   // 导出PDF
-  const exportPDF = async (rangeType: string) => {
-    convertFile('pdf', rangeType)
+  /**
+   * Mỗi trang thành một trang PDF đúng kích thước in (điểm ảnh của trang tính ở 300 DPI),
+   * nội dung là ảnh — chữ trong PDF không chọn/tìm kiếm được.
+   */
+  const exportPDF = async (rangeType?: string) => {
+    Exporting.value = true
+    try {
+      const { jsPDF } = await import('jspdf')
+      const store = useTemplatesStore()
+      const all = store.snapshotDocument()
+      const pages = rangeType === 'all' ? all : [all[store.templateIndex]]
+      let pdf: InstanceType<typeof jsPDF> | undefined
+      for (const page of pages) {
+        const rendered = await renderPage(page, exportScale(page))
+        if (!rendered) continue
+        try {
+          const widthMM = px2mm(page.width / page.zoom)
+          const heightMM = px2mm(page.height / page.zoom)
+          const orientation = widthMM > heightMM ? 'landscape' : 'portrait'
+          if (!pdf) pdf = new jsPDF({ orientation, unit: 'mm', format: [widthMM, heightMM], compress: true })
+          else pdf.addPage([widthMM, heightMM], orientation)
+          pdf.addImage(rendered.element.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, widthMM, heightMM)
+        } finally {
+          rendered.dispose()
+        }
+      }
+      if (!pdf) throw new Error('Không có trang nào để xuất')
+      pdf.save(`yft-design-${Date.now()}.pdf`)
+    } catch (error) {
+      reportExportError(error)
+    } finally {
+      Exporting.value = false
+    }
   }
 
   // 导出PSD
+  /** Xuất trang đang mở thành PSD, mỗi đối tượng là một lớp riêng (dạng ảnh) để chỉnh tiếp trong Photoshop. */
   const exportPSD = async () => {
-    convertFile('psd')
-  }
-
-  const convertFile = async (filetype: string, rangeType?: string) => {
     Exporting.value = true
-    const svgData: string[] = []
-    if (rangeType === 'all') {
-      for (let i = 0; i < templates.value.length; i++) {
-        const template = templates.value[i]
-        const width = template.width / template.zoom
-        const height = template.height / template.zoom
-        const thumpCanvas = templateCanvas.value.get(template.id) as StaticCanvas
-        thumpCanvas.getObjects().filter(item => item.type === ElementNames.REFERENCELINE && item.visible === true).map(item => item.set({visible: false}))
-        const svg = thumpCanvas.toSVG({
-          viewBox: {
-            x: 0,
-            y: 0,
-            width: width,
-            height: height,
-          },
-          width: width + 'px',
-          height: height + 'px'
-        }, (element) => element)
-        svgData.push(btoa(unescape(encodeURIComponent(svg))))
-        thumpCanvas.getObjects().filter(item => item.type === ElementNames.REFERENCELINE && item.visible === false).map(item => item.set({visible: true}))
+    try {
+      const { writePsd } = await import('ag-psd')
+      const store = useTemplatesStore()
+      const page = store.snapshotDocument()[store.templateIndex]
+      const rendered = await renderPage(page, exportScale(page))
+      if (!rendered) throw new Error('Không vẽ được trang')
+      try {
+        const { canvas, scale, originX, originY, width, height } = rendered
+        const copy = (source: HTMLCanvasElement, x: number, y: number, w: number, h: number) => {
+          const target = document.createElement('canvas')
+          target.width = w
+          target.height = h
+          ;(target.getContext('2d') as CanvasRenderingContext2D).drawImage(source, x, y, w, h, 0, 0, w, h)
+          return target
+        }
+        // Ảnh gộp của cả trang (Photoshop và trình xem trước dùng ảnh này).
+        const composite = copy(rendered.element, 0, 0, width, height)
+
+        // Vẽ lần lượt từng đối tượng một mình trên nền trong suốt, rồi cắt lấy đúng vùng của nó.
+        const objects = canvas.getObjects().filter(item => item.visible)
+        canvas.backgroundColor = ''
+        const children = []
+        for (const object of objects) {
+          objects.forEach(item => { item.visible = item === object })
+          canvas.renderAll()
+          const box = object.getBoundingRect()
+          const left = Math.max(0, Math.floor((box.left - originX) * scale))
+          const top = Math.max(0, Math.floor((box.top - originY) * scale))
+          const right = Math.min(width, Math.ceil((box.left + box.width - originX) * scale))
+          const bottom = Math.min(height, Math.ceil((box.top + box.height - originY) * scale))
+          if (right <= left || bottom <= top) continue
+          children.push({
+            name: String((object as any).name || (object as any).text || object.type).slice(0, 60),
+            left,
+            top,
+            canvas: copy(rendered.element, left, top, right - left, bottom - top),
+          })
+        }
+        const buffer = writePsd({ width, height, children, canvas: composite })
+        saveAs(new Blob([buffer], { type: 'image/vnd.adobe.photoshop' }), `yft-design-${Date.now()}.psd`)
+      } finally {
+        rendered.dispose()
       }
-    } 
-    else {
-      svgData.push(btoa(unescape(encodeURIComponent(getSVGData()))))
+    } catch (error) {
+      reportExportError(error)
+    } finally {
+      Exporting.value = false
     }
-    const content = {
-      data: svgData,
-      filetype,
-      width: currentTemplate.value.width / currentTemplate.value.zoom,
-      height: currentTemplate.value.height / currentTemplate.value.zoom,
-    }
-    const result = await exportFile(content)
-    if (result && result.data.link) {
-      downloadLinkFile(result.data.link, `yft-design-${Date.now()}.${filetype}`)
-    }
-    Exporting.value = false
   }
 
   // 导出json

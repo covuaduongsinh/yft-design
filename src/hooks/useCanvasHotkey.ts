@@ -6,7 +6,8 @@ import useCanvasScale from "@/hooks/useCanvasScale";
 import useCanvas from "@/views/Canvas/useCanvas";
 import { Textbox, loadSVGFromString } from "fabric";
 import { getImageDataURL, getImageText } from "@/utils/image";
-import { uploadFile } from "@/api/file";
+import { importDesignFile } from "@/utils/importFile";
+import { ElMessage } from "element-plus";
 import useHandleTemplate from "./useHandleTemplate";
 import useHandleElement from "./useHandleElement";
 import useHistorySnapshot from "./useHistorySnapshot";
@@ -311,12 +312,15 @@ export default () => {
           const imageUrl = URL.createObjectURL(file);
           createImageElement(imageUrl);
         }
-        const res1 = await uploadFile(file, curFileSuffix as string);
-        if (res1 && res1.data.code === 200) {
-          const template = res1.data.data;
-          if (!template) return;
-          await templatesStore.addTemplate(template);
-          setCanvasTransform();
+        // PSD / PDF / AI được đọc ngay trong trình duyệt, không gửi lên máy chủ nào.
+        try {
+          const pages = await importDesignFile(file);
+          if (pages) {
+            await templatesStore.addTemplate(pages);
+            setCanvasTransform();
+          }
+        } catch (error) {
+          ElMessage.error(error instanceof Error && error.message ? error.message : 'Không đọc được tệp này');
         }
       } else if (item.kind === "string" && item.type.indexOf("text/plain") === 0) {
         // 文本数据

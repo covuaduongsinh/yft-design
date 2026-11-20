@@ -20,8 +20,9 @@
         </el-row>
         <el-row
           class="category-box mt-5"
-          v-loading="item.category.length === 0"
+          v-loading="item.category.length === 0 && !loaded.has('c:' + item.type)"
         >
+          <span v-if="item.category.length === 0 && loaded.has('c:' + item.type)" class="stock-empty">Chưa có ảnh</span>
           <div
             class="box-image"
             :style="{
@@ -54,11 +55,13 @@
             ><IconLeft />{{ categoryData.name }}</el-button
           >
         </el-col>
+        <StockUpload kind="image" :category="categoryData.type" @added="reloadTotal(categoryData.type)" />
       </el-row>
       <el-row
         class="total-box mt-5"
-        v-loading="categoryData.total.length === 0"
+        v-loading="categoryData.total.length === 0 && !loaded.has('t:' + categoryData.type)"
       >
+        <span v-if="categoryData.total.length === 0 && loaded.has('t:' + categoryData.type)" class="stock-empty">Danh mục này chưa có ảnh</span>
         <div
           class="box-image"
           v-for="(img, index) in categoryData.total"
@@ -82,11 +85,12 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed } from "vue";
 import { debounce, throttle } from "lodash-es";
-import { getImageCategory, getImagePages } from "@/api/static/image";
+import { getImageCategory, getImagePages, resolveStockImageUrl } from "@/api/static/image";
 import { ImageHit } from "@/api/static/types";
 import { useMainStore } from "@/store";
 import { storeToRefs } from "pinia";
 import useHandleCreate from "@/hooks/useHandleCreate";
+import StockUpload from "./StockUpload.vue";
 const mainStore = useMainStore();
 const { imageCategoryType, imageCategoryData } = storeToRefs(mainStore);
 const { createImageElement } = useHandleCreate();
@@ -98,31 +102,48 @@ const typeRef = ref("all");
 const categoryData = computed(() => {
   return imageCategoryData.value.filter((ele) => ele.type === typeRef.value)[0];
 });
+// Danh mục đã tải xong ('c:<mã>' = hàng xem nhanh, 't:<mã>' = toàn bộ): để phân biệt
+// "đang tải" với "kho chưa có ảnh nào".
+const loaded = ref(new Set<string>());
+
 const getImageCategoryData = throttle(
   async (t: string) => {
-    const res = await getImageCategory({ t });
-    if (res && res.data.code === 200) {
+    try {
+      const res = await getImageCategory({ t });
       imageCategoryData.value
         .filter((item) => item.type === t)
         .map((ele) => (ele.category = res.data.data.slice(0, 2)));
+    } catch (_) {
+      // request.ts đã hiện thông báo lỗi
+    } finally {
+      loaded.value.add('c:' + t);
     }
   },
   100,
   { leading: true, trailing: false }
 );
 
-const getImagePageData = throttle(
-  async (t: string, page: 1) => {
-    const res = await getImagePages({ t, page });
-    if (res && res.data.code === 200) {
-      imageCategoryData.value
-        .filter((item) => item.type === t)
-        .map((ele) => (ele.total = res.data.data));
-    }
-  },
-  100,
-  { leading: true, trailing: false }
-);
+const loadTotal = async (t: string) => {
+  try {
+    const res = await getImagePages({ t, page: 1 });
+    imageCategoryData.value
+      .filter((item) => item.type === t)
+      .map((ele) => (ele.total = res.data.data));
+  } catch (_) {
+    // request.ts đã hiện thông báo lỗi
+  } finally {
+    loaded.value.add('t:' + t);
+  }
+};
+
+const getImagePageData = throttle((t: string, _page: 1) => loadTotal(t), 100, { leading: true, trailing: false });
+
+// Staff vừa thêm ảnh vào kho: tải lại danh mục đang xem và hàng xem nhanh của nó.
+const reloadTotal = async (t: string) => {
+  await loadTotal(t);
+  loaded.value.delete('c:' + t);
+  getImageCategoryData(t);
+};
 
 const getContainScroll = () => {
   let startIndex = 0,
@@ -186,8 +207,9 @@ const hideTotal = () => {
   categoryRef.value.scrollTo({ top: categoryTop.value, behavior: "smooth" });
 };
 
-const createImage = (item: ImageHit) => {
-  createImageElement(item.largeImageURL);
+const createImage = async (item: ImageHit) => {
+  const url = await resolveStockImageUrl(item);
+  if (url) createImageElement(url);
 };
 
 onMounted(() => {

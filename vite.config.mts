@@ -13,9 +13,9 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       host: '0.0.0.0',
       port: 5174,
       proxy: {
-        // Backend của dự án (pnpm server). Các nhóm API bên dưới đã do server này phục vụ;
-        // phần còn lại tạm thời vẫn chuyển sang server gốc cho tới khi được thay thế.
-        '^/api/(oauth|admin|health|design/(config|template|designs|assets|stock|font))': {
+        // Mọi API và file media do backend của chính dự án phục vụ (chạy bằng `pnpm server`).
+        // Ứng dụng không còn gọi tới máy chủ nào khác.
+        '/api': {
           target: 'http://127.0.0.1:8788',
           changeOrigin: true,
           secure: false,
@@ -24,24 +24,6 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
           target: 'http://127.0.0.1:8788',
           changeOrigin: true,
           secure: false,
-        },
-        '/api': {
-          target: 'https://yft.design',
-          changeOrigin: true,
-          secure: false,
-          rewrite: (path) => path.replace(new RegExp('^'), ''),
-        },
-        '/static': {
-          target: 'https://yft.design',
-          changeOrigin: true,
-          secure: false,
-          rewrite: (path) => path.replace(new RegExp('^'), ''),
-        },
-        '/yft-static': {
-          target: 'https://yft.design',
-          changeOrigin: true,
-          secure: false,
-          rewrite: (path) => path.replace(new RegExp('^'), ''),
         },
       },
     },

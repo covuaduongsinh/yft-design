@@ -123,6 +123,7 @@ import {
   UploadRawFile,
 } from "element-plus";
 import { uploadImage, uploadURL } from "@/api/matting";
+import { ApiError } from "@/utils/request";
 import { useTemplatesStore } from "@/store";
 import { MattingModel } from "@/configs/images";
 import { Image } from "fabric";
@@ -212,26 +213,33 @@ const uploadHandle = async (option: any) => {
   const fileSuffix = state.filename.split(".").pop();
   if (!state.fileAccept.split(",").includes(`.${fileSuffix}`)) return;
   state.originImage = await getImageDataURL(option.file);
-  const res = await uploadImage(option.file, fileSuffix);
-  const mattingData = res.data;
-  const { width, height } = await getImageSize(state.originImage);
-  if (mattingData.code === 200) {
-    state.resultImage = mattingData.resultImage;
-    // state.offsetWidth = mattingData.size.width
+  try {
+    const res = await uploadImage(option.file, fileSuffix);
+    state.resultImage = res.data.resultImage;
     requestAnimationFrame(run);
+  } catch (_) {
+    // request.ts đã hiện thông báo lỗi (vd máy chủ chưa bật tách nền, chưa đăng nhập)
   }
 };
 
 const updateElement = async (image?: string) => {
   if (!image) return
   state.originImage = image;
-  const res = await uploadURL(image);
-  const mattingData = res.data;
-  const { width, height } = await getImageSize(state.originImage);
-  if (mattingData.code === 200) {
-    state.resultImage = mattingData.resultImage;
-    // state.offsetWidth = mattingData.size.width
+  try {
+    // Ảnh trên canvas có thể là ảnh nhúng, ảnh tạm của trình duyệt (blob:) hoặc ảnh đã lưu:
+    // lấy dữ liệu ngay tại trình duyệt rồi gửi dạng file, vì máy chủ không tự đi tải URL lạ.
+    let res
+    try {
+      const blob = await (await fetch(image)).blob()
+      res = await uploadImage(new File([blob], 'image', { type: blob.type }))
+    } catch (error) {
+      if (error instanceof ApiError) throw error
+      res = await uploadURL(image)
+    }
+    state.resultImage = res.data.resultImage;
     requestAnimationFrame(run);
+  } catch (_) {
+    // request.ts đã hiện thông báo lỗi
   }
 }
 

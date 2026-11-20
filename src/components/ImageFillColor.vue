@@ -46,7 +46,6 @@ import { computed, ref, watch, nextTick } from 'vue'
 import { UploadFilled } from '@element-plus/icons-vue'
 import { getImageDataURL, getImageText } from '@/utils/image'
 import { ElMessage, genFileId, UploadInstance, UploadProps, UploadRawFile } from "element-plus"
-import { uploadFile } from '@/api/file'
 import { useTemplatesStore } from '@/store'
 import useCanvasScale from '@/hooks/useCanvasScale'
 import useHandleCreate from '@/hooks/useHandleCreate'

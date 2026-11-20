@@ -173,7 +173,12 @@ export const initEditor = async (skipDefault?: boolean) => {
   useTemplatesStore().resetCanvasBinding()
   if (import.meta.env.DEV) {
     // Chỉ có ở bản dev: cho phép kiểm thử tự động đọc canvas và store từ console.
-    (window as any).__yftDebug = { canvas: () => canvas, templates: () => useTemplatesStore() }
+    (window as any).__yftDebug = {
+      canvas: () => canvas,
+      templates: () => useTemplatesStore(),
+      importFile: (file: File) => import('@/utils/importFile').then(module => module.importDesignFile(file)),
+      exporter: () => import('@/hooks/useCanvasExport').then(module => module.default()),
+    }
   }
   // Đăng ký sự kiện ngay khi có canvas; trước đây bị bỏ qua nếu mở bằng ?template=...
   initEvent()

@@ -6,7 +6,8 @@ import useHandleCreate from "@/hooks/useHandleCreate";
 import useCanvasScale from "@/hooks/useCanvasScale";
 import { useTemplatesStore } from "@/store";
 import { loadSVGFromString } from 'fabric'
-import { uploadFile } from "@/api/file";
+import { importDesignFile } from "@/utils/importFile";
+import { ElMessage } from "element-plus";
 // import axios from 'axios'; // 确保你已经安装并导入了axios
 
 interface DropImageOptions {
@@ -69,12 +70,15 @@ const defaultUpload = async (files: FileList, uploadUrl: string): Promise<void> 
       const dataURL = await getImageDataURL(file);
       createImageElement(dataURL);
     }
-    const res1 = await uploadFile(file, curFileSuffix as string);
-    if (res1 && res1.data.code === 200) {
-      const template = res1.data.data;
-      if (!template) return;
-      await templatesStore.addTemplate(template);
-      setCanvasTransform();
+    // PSD / PDF / AI được đọc ngay trong trình duyệt, không gửi lên máy chủ nào.
+    try {
+      const pages = await importDesignFile(file);
+      if (pages) {
+        await templatesStore.addTemplate(pages);
+        setCanvasTransform();
+      }
+    } catch (error) {
+      ElMessage.error(error instanceof Error && error.message ? error.message : 'Không đọc được tệp này');
     }
   });
 };
