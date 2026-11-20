@@ -30,15 +30,18 @@ import { Search } from "@element-plus/icons-vue"
 import { onMounted, ref } from "vue"
 import { getTemplateDetailPages } from '@/api/template'
 import { TemplateItem } from '@/api/template/types'
-import { useTemplatesStore } from '@/store'
+import { useDesignStore, useTemplatesStore } from '@/store'
 import { ElMessage, ElMessageBox, ElLoading } from 'element-plus'
 import { unzip } from "@/utils/crypto"
 import { PageSize } from "@/configs/size"
 import { throttle, debounce } from 'lodash-es'
 import { useRouter } from 'vue-router'
+import useDesign from '@/hooks/useDesign'
 
 const router = useRouter()
 const templatesStore = useTemplatesStore()
+const designStore = useDesignStore()
+const { checkpoint } = useDesign()
 const templateItems = ref<TemplateItem[]>([])
 const activeTemplate = ref("data");
 const activeSelfTemplate = ref("buy");
@@ -113,9 +116,16 @@ const handleChangeTemplate = (item: TemplateItem) => {
     }
   )
     .then(async () => {
-      router.push(`${router.currentRoute.value.path}?template=${item.id}`)
       const data = unzip(item.data)
       const loadingInstance = ElLoading.service({ fullscreen: true, background: 'rgba(122, 122, 122, 0.5)' })
+      if (designStore.bound) {
+        // Đang sửa một thiết kế đã lưu: template sẽ thay toàn bộ nội dung của nó, nên lưu lại
+        // trạng thái hiện tại thành một phiên bản trước để còn quay về được.
+        await checkpoint('Trước khi đổi mẫu')
+      }
+      else {
+        router.push(`${router.currentRoute.value.path}?template=${item.id}`)
+      }
       await templatesStore.changeTemplate(data)
       nextTick(() => loadingInstance.close())
       ElMessage({

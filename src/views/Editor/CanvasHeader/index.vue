@@ -22,6 +22,7 @@
         <!-- <i class="handler-item iconfont icon-ruler" @click="changeRuler()" /> -->
         <IconRuler class="handler-item" @click="changeRuler()" />
       </el-tooltip>
+      <DesignBar />
     </div>
 
     <div class="center-handler" v-show="canIntersection">
@@ -77,6 +78,7 @@ import useHandleTool from "@/hooks/useHandleTool";
 import useCanvasScale from "@/hooks/useCanvasScale";
 import useHandleElement from "@/hooks/useHandleElement";
 import useHistorySnapshot from "@/hooks/useHistorySnapshot";
+import DesignBar from "@/components/DesignBar/index.vue";
 
 const fabricStore = useFabricStore();
 const mainStore = useMainStore();

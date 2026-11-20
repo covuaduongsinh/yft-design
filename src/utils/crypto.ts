@@ -20,19 +20,25 @@ export const decrypt = (ciphertext: string) => {
 }
 
 
+/**
+ * Nén chuỗi (thường là JSON của tài liệu thiết kế) thành base64 của gzip.
+ * Chuyển sang chuỗi nhị phân theo từng khúc: gọi `String.fromCharCode.apply` với
+ * cả mảng một lần sẽ tràn ngăn xếp khi tài liệu lớn hơn vài trăm KB.
+ */
 export const zip = (str: string) => {
-  const arr = pako.deflate(str, { gzip: true } as any);
-  const ret = btoa(String.fromCharCode.apply(null, arr as any));
-  return ret;
+  const bytes = pako.gzip(str)
+  const CHUNK = 0x8000
+  let binary = ''
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK) as unknown as number[])
+  }
+  return btoa(binary)
 }
- 
+
+/** Giải nén chuỗi do `zip` (hoặc server) tạo ra và trả về giá trị JSON bên trong. */
 export const unzip = (b64Data: string) => {
-  let strData = atob(b64Data);
-  const charData = strData.split("").map(function (x) {
-    return x.charCodeAt(0);
-  });
-  const binData = new Uint8Array(charData);
-  const data = pako.inflate(binData);
-  strData = new TextDecoder("utf-8").decode(data);
-  return JSON.parse(strData);
-};
+  const binary = atob(b64Data)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  return JSON.parse(pako.inflate(bytes, { to: 'string' }))
+}

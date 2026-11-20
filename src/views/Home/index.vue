@@ -13,12 +13,24 @@
       </el-header>
       <el-container>
         <el-aside width="216px">
-          <el-menu active-text-color="#000" default-active="1" class="pt-[20px] h-lvh">
+          <el-menu active-text-color="#000" :default-active="activeMenu" class="pt-[20px] h-lvh" @select="selectMenu">
             <el-menu-item index="1">
               <span class="flex w-[30px] justify-center">
                 <IconNavigation/>
               </span>
               <span>Dành cho bạn</span>
+            </el-menu-item>
+            <el-menu-item index="designs">
+              <span class="flex w-[30px] justify-center">
+                <IconFolderClose/>
+              </span>
+              <span>Thiết kế của tôi</span>
+            </el-menu-item>
+            <el-menu-item index="trash">
+              <span class="flex w-[30px] justify-center">
+                <IconDelete/>
+              </span>
+              <span>Thùng rác</span>
             </el-menu-item>
             <el-menu-item index="2">
               <span class="flex w-[30px] justify-center">
@@ -35,19 +47,23 @@
           </el-menu>
         </el-aside>
         <el-main @scroll="handleScroll" class="h-lvh" id="main">
-          <MainSearch />
-          <!-- <MainScene />
-          <MainTools /> -->
-          <el-row class="mt-[40px]">
-            <b class="text-[20px]">Đề xuất hôm nay</b>
-          </el-row>
-          <TransitionGroup :name="resultReactive.move ? 'group' : ''" tag="div" class="waterfall-box" id="homeWaterfall">
-            <div class="waterfall-item" v-for="(item, index) in resultReactive.items" :key="item.id">
-              <img class="pic" :src="item.preview" alt="" :ref="(e: any) => setItemStyle(e, index)" @click="changeTemplate(item.id)">
-              <div class="title">{{ item.title }}</div>
-              <div class="content ellipsis_2">{{ item.text }}</div>
-            </div>
-          </TransitionGroup>
+          <MyDesigns v-if="activeMenu === 'designs' || activeMenu === 'trash'" :trashed="activeMenu === 'trash'" />
+          <!-- Giữ khối đề xuất trong DOM (v-show) vì bố cục thác nước được đo theo phần tử này. -->
+          <div v-show="activeMenu !== 'designs' && activeMenu !== 'trash'">
+            <MainSearch />
+            <!-- <MainScene />
+            <MainTools /> -->
+            <el-row class="mt-[40px]">
+              <b class="text-[20px]">Đề xuất hôm nay</b>
+            </el-row>
+            <TransitionGroup :name="resultReactive.move ? 'group' : ''" tag="div" class="waterfall-box" id="homeWaterfall">
+              <div class="waterfall-item" v-for="(item, index) in resultReactive.items" :key="item.id">
+                <img class="pic" :src="item.preview" alt="" :ref="(e: any) => setItemStyle(e, index)" @click="changeTemplate(item.id)">
+                <div class="title">{{ item.title }}</div>
+                <div class="content ellipsis_2">{{ item.text }}</div>
+              </div>
+            </TransitionGroup>
+          </div>
         </el-main>
       </el-container>
     </el-container>
@@ -64,8 +80,15 @@ import { throttle } from 'lodash-es'
 import { PageSize } from "@/configs/size"
 import { useRouter } from 'vue-router'
 import UserMenu from '@/components/UserMenu/index.vue'
+import MyDesigns from './components/MyDesigns.vue'
 
 const router = useRouter()
+// Mục đang chọn ở menu trái; mở /home?tab=designs để vào thẳng "Thiết kế của tôi".
+const initialTab = router.currentRoute.value.query.tab
+const activeMenu = ref(initialTab === 'designs' || initialTab === 'trash' ? initialTab : '1')
+const selectMenu = (index: string) => {
+  activeMenu.value = index
+}
 const resultReactive = reactive({
   loading: false,
   page: 1,

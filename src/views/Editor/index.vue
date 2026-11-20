@@ -15,12 +15,19 @@ import { storeToRefs } from 'pinia'
 import { isMobile } from '@/utils/common'
 import { LocalStorageDiscardedKey } from '@/configs/canvas'
 import { deleteDiscardedDB } from '@/utils/database'
+import useDesign from '@/hooks/useDesign'
 
 const { messages }= useI18n()
 const { databaseId } = storeToRefs(useMainStore())
 const locale = computed(() => messages.value)
+// Chỉ hỏi lại khi rời trang nếu thật sự còn thay đổi chưa được lưu lên server.
+const { hasUnsavedChanges } = useDesign()
 if (import.meta.env.MODE === 'production') {
-  window.onbeforeunload = () => false
+  window.onbeforeunload = (event: BeforeUnloadEvent) => {
+    if (!hasUnsavedChanges()) return undefined
+    event.preventDefault()
+    return ''
+  }
 }
 
 const snapshotStore = useSnapshotStore()

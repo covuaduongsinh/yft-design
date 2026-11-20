@@ -20,6 +20,8 @@ import { contextMenus } from '@/configs/contextMenu'
 import { initEditor } from '@/views/Canvas/useCanvas'
 import { ElMessage, ElLoading } from 'element-plus'
 import useCanvasHotkey from '@/hooks/useCanvasHotkey'
+import useDesign from '@/hooks/useDesign'
+const { openDesign, detach, startWatching, loadDocument } = useDesign()
 const fabricStore = useFabricStore()
 const mainStore = useMainStore()
 const router = useRouter()
@@ -38,20 +40,17 @@ const remDrawAreaFocus = () => {
 }
 
 const getTemplateDetail = async (pk: number) => {
-  const result = await getTemplateData(pk)
-  if (result.data && result.data.code === 200 && result.data.data) {
-    try {
-      router.push(`${router.currentRoute.value.path}?template=${pk}`)
-      console.log('result.data.data.id:', result.data.data.id)
-      const data = unzip(result.data.data.data)
-      await templatesStore.changeTemplate(data)
-    } 
-    catch (error) {
-      ElMessage({
-        type: 'error',
-        message: 'Tải mẫu thất bại, vui lòng liên hệ quản trị viên',
-      })
-    }
+  try {
+    const result = await getTemplateData(pk)
+    router.push(`${router.currentRoute.value.path}?template=${pk}`)
+    // Mở một template là bắt đầu một tài liệu mới, chưa thuộc thiết kế nào trong tài khoản.
+    await loadDocument(unzip(result.data.data.data))
+  }
+  catch (error) {
+    ElMessage({
+      type: 'error',
+      message: 'Tải mẫu thất bại, vui lòng liên hệ quản trị viên',
+    })
   }
 }
 
@@ -66,8 +65,20 @@ const initRouter = async (templateId?: number) => {
 
 onMounted(async () => {
   const query = router.currentRoute.value.query
-  initRouter(query.template)
-  initEditor(Number(query.template) > 0)
+  const designId = typeof query.design === 'string' ? query.design : ''
+  const templateId = Number(query.template) > 0 ? Number(query.template) : 0
+  detach()
+  startWatching()
+  // Sắp nạp một thiết kế/template từ server thì không vẽ tài liệu mẫu mặc định trước.
+  initEditor(!!designId || templateId > 0)
+  if (designId) {
+    const opened = await openDesign(designId)
+    // Không mở được (đã xoá, sai tài khoản...): hiện tài liệu mặc định thay vì canvas trống.
+    if (!opened) await templatesStore.renderTemplate()
+  }
+  else if (templateId) {
+    initRouter(templateId)
+  }
   document.addEventListener('keydown', keydownListener)
   document.addEventListener('keyup', keyupListener)
   window.addEventListener('blur', keyupListener)

@@ -3,8 +3,12 @@ import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { publicConfig } from './core/config.js';
 import { errorHandler, notFoundHandler, ok } from './core/http.js';
+import { createMediaStore } from './core/media.js';
 import { createRateLimiter } from './core/security.js';
 import { spaHandler } from './core/static.js';
+import { createStorageMeter } from './core/storage.js';
+import { designRoutes } from './designs/routes.js';
+import { createDesignService } from './designs/service.js';
 import { createMailer } from './auth/mailer.js';
 import { createAuthMiddleware } from './auth/middleware.js';
 import { adminUserRoutes, authRoutes } from './auth/routes.js';
@@ -31,9 +35,13 @@ export function createApp({ config, db, deps = {} }) {
     auth: createRateLimiter({ limit: config.authRatePerMinute }),
     upload: createRateLimiter({ limit: config.uploadRatePerMinute }),
   };
-  /** @type {Array<() => void>} tác vụ dọn dẹp định kỳ do từng module đăng ký */
-  const maintenance = [];
-  const ctx = { config, db, auth, guard, limiters, mailer, deps, maintenance };
+  const media = createMediaStore(config.mediaDir);
+  const storage = createStorageMeter(db);
+  const designs = createDesignService({ db, config, media, storage });
+
+  /** @type {Array<() => unknown>} tác vụ dọn dẹp định kỳ do từng module đăng ký */
+  const maintenance = [() => designs.purgeExpiredTrash()];
+  const ctx = { config, db, auth, guard, limiters, mailer, deps, maintenance, media, storage, designs };
 
   const app = new Hono();
   app.onError(errorHandler);
@@ -54,6 +62,12 @@ export function createApp({ config, db, deps = {} }) {
   app.use('/api/admin/*', limitBody(MiB));
   app.route('/api/oauth', authRoutes(ctx));
   app.route('/api/admin', adminUserRoutes(ctx));
+
+  // Tài liệu gửi lên ở dạng base64 của gzip: lớn hơn dữ liệu nén khoảng 1/3.
+  app.use('/api/design/designs/*', limitBody(Math.ceil(config.maxDesignDocumentBytes * 1.4) + MiB));
+  app.route('/api/design/designs', designRoutes(ctx));
+
+  app.on(['GET', 'HEAD'], '/media/*', media.handler);
 
   // Tạm thời: danh sách template rỗng (giống server giả lập cũ) cho tới khi có module templates.
   app.get('/api/design/template/*', (c) =>
