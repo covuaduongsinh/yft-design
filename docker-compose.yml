@@ -28,5 +28,25 @@ services:
     expose:
       - "8788"
 
+  # Tách nền ảnh (tuỳ chọn, mặc định KHÔNG chạy). Bật bằng cách đặt trong biến môi trường:
+  #   COMPOSE_PROFILES=matting
+  #   MATTING_URL=http://rembg:7000
+  # Dịch vụ này nặng (image ~1,6 GB, cần khoảng 2 GB RAM) và không có xác thực, nên chỉ nằm
+  # trong mạng nội bộ của compose: không gắn domain, không mở cổng ra ngoài.
+  rembg:
+    image: danielgatis/rembg:latest
+    profiles: ["matting"]
+    restart: unless-stopped
+    command: ["s", "--host", "0.0.0.0", "--port", "7000"]
+    mem_limit: ${REMBG_MEM_LIMIT:-3g}
+    volumes:
+      # Giữ mô hình đã tải, khỏi tải lại mỗi lần khởi động. Đường dẫn này theo mặc định của
+      # rembg và chưa được kiểm chứng với image hiện hành: nếu mô hình vẫn bị tải lại, hãy xem
+      # tài liệu của image để sửa lại đường dẫn.
+      - rembg-models:/root/.u2net
+    expose:
+      - "7000"
+
 volumes:
   yft-data:
+  rembg-models:

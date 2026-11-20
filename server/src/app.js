@@ -5,6 +5,7 @@ import { publicConfig } from './core/config.js';
 import { errorHandler, notFoundHandler, ok } from './core/http.js';
 import { assetRoutes } from './assets/routes.js';
 import { createAssetService } from './assets/service.js';
+import { createBackup } from './core/backup.js';
 import { createMediaStore } from './core/media.js';
 import { createRateLimiter } from './core/security.js';
 import { spaHandler } from './core/static.js';
@@ -60,10 +61,11 @@ export function createApp({ config, db, deps = {} }) {
   const fonts = createFontService({ db, config, media });
   const stock = createStockService({ db, config, media, assets, fetchImpl: deps.fetchImpl });
   const matting = createMattingService({ config, media, assets, fetchImpl: deps.fetchImpl });
-  maintenance.push(() => stock.purgeCache());
+  const backup = createBackup({ db, config });
+  maintenance.push(() => stock.purgeCache(), () => backup.runIfDue());
   const ctx = {
     config, db, auth, guard, limiters, mailer, deps, maintenance, media, storage,
-    designs, assets, templates, fonts, stock, matting,
+    designs, assets, templates, fonts, stock, matting, backup,
   };
 
   const app = new Hono();

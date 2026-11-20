@@ -13,7 +13,8 @@
     "test": "node --test --test-reporter=spec \"test/**/*.test.js\"",
     "create-admin": "node src/cli/create-admin.js",
     "import-users": "node src/cli/import-users.js",
-    "import-template": "node src/cli/import-template.js"
+    "import-template": "node src/cli/import-template.js",
+    "backup": "node src/cli/backup.js"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.9",

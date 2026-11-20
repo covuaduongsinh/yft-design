@@ -73,7 +73,9 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       extensions: [".js", ".ts", ".jsx", ".tsx", ".vue", ".json"],
     },
     build: {
-      target: "es2015",
+      // es2020: các thư viện nhập/xuất PDF, PSD (pdf.js, jsPDF, ag-psd) dùng cú pháp không hạ cấp
+      // được xuống es2015 một cách an toàn; mọi trình duyệt từ 2020 trở đi đều hỗ trợ mức này.
+      target: "es2020",
       outDir: path.resolve(__dirname, "dist"),
       minify: "terser",
       terserOptions: {
