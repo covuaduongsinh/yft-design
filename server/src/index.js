@@ -21,15 +21,18 @@ const { app, ctx, close } = createApp({ config, db });
 const adminEmail = await ctx.auth.ensureAdmin();
 if (adminEmail) console.log(`[AUTH] Đã tạo/nâng quyền quản trị viên đầu tiên: ${adminEmail}`);
 
-ctx.auth.purgeExpired();
-const maintenance = setInterval(() => {
-  try {
-    ctx.auth.purgeExpired();
-    for (const task of ctx.maintenance ?? []) task();
-  } catch (err) {
-    console.error('[BẢO TRÌ] Lỗi tác vụ định kỳ:', err);
+/** Chạy các tác vụ dọn dẹp; một tác vụ lỗi không được làm hỏng các tác vụ khác hay làm sập server. */
+async function runMaintenance() {
+  for (const task of [() => ctx.auth.purgeExpired(), ...ctx.maintenance]) {
+    try {
+      await task();
+    } catch (err) {
+      console.error('[BẢO TRÌ] Lỗi tác vụ định kỳ:', err);
+    }
   }
-}, 10 * 60_000);
+}
+await runMaintenance();
+const maintenance = setInterval(runMaintenance, 10 * 60_000);
 maintenance.unref();
 
 const server = serve({ fetch: app.fetch, port: config.port, hostname: config.host }, (info) => {

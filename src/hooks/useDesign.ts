@@ -6,6 +6,7 @@ import { useDesignStore, useFabricStore, useMainStore, useTemplatesStore, useUse
 import { ApiError } from '@/utils/request'
 import { zip, unzip } from '@/utils/crypto'
 import { renderPageThumbnail } from '@/utils/pageThumbnail'
+import { externalizeImages } from '@/utils/assetUpload'
 import { Template } from '@/types/canvas'
 import {
   createDesign,
@@ -94,6 +95,19 @@ const markClean = () => {
   savedSeq = changeSeq
 }
 
+/**
+ * Đưa ảnh nhúng trong bản sao sắp lưu lên server (xem utils/assetUpload). Ảnh nào không đưa
+ * lên được thì vẫn nằm nhúng trong tài liệu nên không mất, chỉ báo cho người dùng một lần.
+ */
+let lastImageWarning = ''
+const moveImagesToServer = async (doc: DesignDocument) => {
+  const result = await externalizeImages(doc)
+  if (result.remaining > 0 && result.error && result.error !== lastImageWarning) {
+    lastImageWarning = result.error
+    ElMessage.warning(`Có ${result.remaining} ảnh chưa đưa được lên máy chủ (${result.error}). Ảnh vẫn được lưu kèm trong thiết kế.`)
+  }
+}
+
 const uploadThumbnail = async (id: string, page: Template | undefined, force = false) => {
   if (!page) return
   const now = Date.now()
@@ -136,6 +150,7 @@ const doSave = async (options: { thumbnail?: boolean }): Promise<boolean> => {
   await nextTick()
   const seqAtStart = changeSeq
   const doc = buildDocument()
+  await moveImagesToServer(doc)
   const json = JSON.stringify(doc)
 
   if (json === lastSavedJson) {
@@ -250,8 +265,9 @@ const saveAsNew = async (title?: string): Promise<boolean> => {
   await nextTick()
   const seqAtStart = changeSeq
   const doc = buildDocument()
-  const json = JSON.stringify(doc)
   designStore.setStatus('saving')
+  await moveImagesToServer(doc)
+  const json = JSON.stringify(doc)
   try {
     const result = await createDesign({ title: title || designStore.title || DEFAULT_DESIGN_TITLE, data: zip(json) })
     designStore.bind(result.data.data)

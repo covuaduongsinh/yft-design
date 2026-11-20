@@ -79,3 +79,22 @@ export interface DesignVersionResult {
   data: DesignVersion
   msg: string
 }
+
+export interface Asset {
+  id: string
+  name: string
+  /** Đường dẫn ảnh (/media/a/...), dùng trực tiếp làm src trong tài liệu thiết kế. */
+  url: string
+  thumbnail: string
+  mime: string
+  width: number
+  height: number
+  size: number
+  created_at: number
+}
+
+export interface AssetResult {
+  code: number
+  data: Asset
+  msg: string
+}

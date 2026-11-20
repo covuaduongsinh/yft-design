@@ -8,6 +8,7 @@ import {
   DesignUpdateData,
   DesignVersionListResult,
   DesignVersionResult,
+  AssetResult,
 } from './types'
 
 const BASE = '/api/design/designs'
@@ -55,6 +56,19 @@ export function uploadDesignThumbnail(id: string, image: Blob) {
   return request({
     url: `${BASE}/${id}/thumbnail`,
     method: 'put',
+    data: formData,
+    headers: { 'Content-Type': 'multipart/form-data' },
+    silent: true,
+  })
+}
+
+/** Tải một ảnh lên kho của tài khoản; gửi lại đúng file cũ thì nhận lại ảnh đã có. */
+export function uploadAsset(file: Blob, name?: string): AxiosPromise<AssetResult> {
+  const formData = new FormData()
+  formData.append('file', file, name || 'image')
+  return request({
+    url: '/api/design/assets',
+    method: 'post',
     data: formData,
     headers: { 'Content-Type': 'multipart/form-data' },
     silent: true,

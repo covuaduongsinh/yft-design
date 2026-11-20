@@ -3,6 +3,8 @@ import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { publicConfig } from './core/config.js';
 import { errorHandler, notFoundHandler, ok } from './core/http.js';
+import { assetRoutes } from './assets/routes.js';
+import { createAssetService } from './assets/service.js';
 import { createMediaStore } from './core/media.js';
 import { createRateLimiter } from './core/security.js';
 import { spaHandler } from './core/static.js';
@@ -37,11 +39,16 @@ export function createApp({ config, db, deps = {} }) {
   };
   const media = createMediaStore(config.mediaDir);
   const storage = createStorageMeter(db);
-  const designs = createDesignService({ db, config, media, storage });
+  const assets = createAssetService({ db, config, media, storage });
+  const designs = createDesignService({ db, config, media, storage, assets });
 
   /** @type {Array<() => unknown>} tác vụ dọn dẹp định kỳ do từng module đăng ký */
-  const maintenance = [() => designs.purgeExpiredTrash()];
-  const ctx = { config, db, auth, guard, limiters, mailer, deps, maintenance, media, storage, designs };
+  const maintenance = [
+    () => designs.purgeExpiredTrash(),
+    () => assets.purgeUnused(),
+    () => assets.sweepOrphanFiles(),
+  ];
+  const ctx = { config, db, auth, guard, limiters, mailer, deps, maintenance, media, storage, designs, assets };
 
   const app = new Hono();
   app.onError(errorHandler);
@@ -66,6 +73,9 @@ export function createApp({ config, db, deps = {} }) {
   // Tài liệu gửi lên ở dạng base64 của gzip: lớn hơn dữ liệu nén khoảng 1/3.
   app.use('/api/design/designs/*', limitBody(Math.ceil(config.maxDesignDocumentBytes * 1.4) + MiB));
   app.route('/api/design/designs', designRoutes(ctx));
+
+  app.use('/api/design/assets/*', limitBody(config.maxUploadBytes + MiB));
+  app.route('/api/design/assets', assetRoutes(ctx));
 
   app.on(['GET', 'HEAD'], '/media/*', media.handler);
 

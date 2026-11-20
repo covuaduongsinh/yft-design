@@ -24,9 +24,10 @@ const cleanTitle = (title, fallback = DEFAULT_TITLE) => {
  *
  * @param {{ db: import('better-sqlite3').Database, config: object,
  *           media: ReturnType<import('../core/media.js').createMediaStore>,
- *           storage: { used(userId: number): number } }} deps
+ *           storage: { used(userId: number): number },
+ *           assets: ReturnType<import('../assets/service.js').createAssetService> }} deps
  */
-export function createDesignService({ db, config, media, storage }) {
+export function createDesignService({ db, config, media, storage, assets }) {
   const view = (row) => ({
     id: row.id,
     title: row.title,
@@ -80,6 +81,8 @@ export function createDesignService({ db, config, media, storage }) {
       `INSERT INTO design_versions (id, design_id, label, is_auto, page_count, revision, data_bytes, created_by, created_at, data)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).run(id, designId, label.slice(0, 120), isAuto ? 1 : 0, pageCount, revision, blob.length, userId, Date.now(), blob);
+    // Mọi phiên bản đều chụp tài liệu hiện tại của thiết kế, nên dùng đúng các ảnh của nó lúc này.
+    assets.copyDesignRefsToVersion(designId, id);
     return id;
   }
 
@@ -136,6 +139,7 @@ export function createDesignService({ db, config, media, storage }) {
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       ).run(id, userId, cleanTitle(title), document.width, document.height, document.pageCount, document.blob.length, t, t);
       db.prepare('INSERT INTO design_documents (design_id, data) VALUES (?, ?)').run(id, document.blob);
+      assets.setDesignRefs(id, document.assetIds);
     })();
     return view(own(userId, id));
   }
@@ -199,6 +203,8 @@ export function createDesignService({ db, config, media, storage }) {
         `UPDATE designs SET width = ?, height = ?, page_count = ?, data_bytes = ?, revision = revision + 1, updated_at = ?
          WHERE id = ?`,
       ).run(document.width, document.height, document.pageCount, document.blob.length, t, row.id);
+      // Sau khi bản cũ (nếu có) đã được chụp kèm danh sách ảnh của nó.
+      assets.setDesignRefs(row.id, document.assetIds);
     })();
 
     return view(own(userId, id));
@@ -236,6 +242,7 @@ export function createDesignService({ db, config, media, storage }) {
           t,
         );
         db.prepare('INSERT INTO design_documents (design_id, data) VALUES (?, ?)').run(newId, blob);
+        assets.copyDesignRefs(source.id, newId);
       })();
     } catch (err) {
       await media.remove(thumbnail);
@@ -359,6 +366,7 @@ export function createDesignService({ db, config, media, storage }) {
       db.prepare(
         'UPDATE designs SET page_count = ?, data_bytes = ?, revision = revision + 1, updated_at = ? WHERE id = ?',
       ).run(version.page_count, version.data.length, Date.now(), row.id);
+      assets.copyVersionRefsToDesign(version.id, row.id);
       pruneAutoVersions(row.id);
     })();
     return get(userId, id);

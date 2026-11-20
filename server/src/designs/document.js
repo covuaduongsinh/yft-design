@@ -1,5 +1,6 @@
 import zlib from 'node:zlib';
 import { promisify } from 'node:util';
+import { extractAssetIds } from '../assets/service.js';
 import { badRequest, tooLarge } from '../core/http.js';
 
 const gunzip = promisify(zlib.gunzip);
@@ -74,8 +75,15 @@ export async function decodeDocument(encoded, maxBytes) {
     throw invalid('Tài liệu thiết kế không phải JSON hợp lệ');
   }
   const document = normalizeDocument(parsed);
-  const blob = await gzip(Buffer.from(JSON.stringify(document), 'utf8'));
-  return { blob, pageCount: document.pages.length, ...firstPageSize(document.pages) };
+  const json = JSON.stringify(document);
+  const blob = await gzip(Buffer.from(json, 'utf8'));
+  return {
+    blob,
+    pageCount: document.pages.length,
+    ...firstPageSize(document.pages),
+    // Ảnh tải lên mà tài liệu này tham chiếu, để server biết ảnh nào còn được dùng.
+    assetIds: extractAssetIds(json),
+  };
 }
 
 /** Chuỗi gửi về client: base64 của đúng khối gzip đang lưu. */
