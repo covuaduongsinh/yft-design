@@ -43,6 +43,10 @@ export interface MainState {
 const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz')
 export const databaseId = nanoid(10)
 
+// Trạng thái nạp font dùng chung (xem getOnlineFonts).
+let onlineFontsLoading: Promise<void> | null = null
+const loadedFontUrls = new Set<string>()
+
 export const useMainStore = defineStore('main', {
   state: (): MainState => ({
     canvasObject: undefined,
@@ -146,20 +150,34 @@ export const useMainStore = defineStore('main', {
       this.systemFonts = getSupportFonts(SYS_FONTS)
     },
 
-    async getOnlineFonts() {
-      const res = await getFontInfo()
-      if (res.data.code === 200) {
-        // this.onlineFonts = res.data.data
-        const style = document.createElement("style");
-        style.type = "text/css";
-        res.data.data.forEach(fontInfo => {
-          this.onlineFonts.push({label: fontInfo.fontname, value: fontInfo.fontname})
-          style.appendChild(document.createTextNode(
-            `@font-face {font-family: '${fontInfo.fontname}'; src: url(${fontInfo.url}) format('truetype');}`
-          ));
-        })
-        document.head.appendChild(style);
-      }
+    /**
+     * Nạp các font dùng chung do staff tải lên và chờ chúng sẵn sàng để vẽ.
+     * Gọi nhiều lần vẫn chỉ tải một lần; `force` để tải lại sau khi thêm/xoá font.
+     * Phải xong trước khi vẽ một tài liệu, nếu không fabric đo chữ bằng font dự phòng.
+     */
+    getOnlineFonts(force = false): Promise<void> {
+      if (onlineFontsLoading && !force) return onlineFontsLoading
+      onlineFontsLoading = (async () => {
+        try {
+          const res = await getFontInfo()
+          const fonts = res.data.data
+          this.onlineFonts = fonts.map(font => ({ label: font.fontname, value: font.fontname }))
+          await Promise.all(fonts.map(async (font) => {
+            if (loadedFontUrls.has(font.url)) return
+            try {
+              const face = new FontFace(font.fontname, `url("${font.url}")`)
+              await face.load()
+              document.fonts.add(face)
+              loadedFontUrls.add(font.url)
+            } catch (_) {
+              // Một font hỏng không được chặn các font khác hay việc mở tài liệu.
+            }
+          }))
+        } catch (_) {
+          // Không lấy được danh sách font: trình chỉnh sửa vẫn dùng được font có sẵn.
+        }
+      })()
+      return onlineFontsLoading
     },
     
     setExportType(type: ExportTypes) {

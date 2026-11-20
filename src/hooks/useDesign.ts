@@ -7,6 +7,7 @@ import { ApiError } from '@/utils/request'
 import { zip, unzip } from '@/utils/crypto'
 import { renderPageThumbnail } from '@/utils/pageThumbnail'
 import { externalizeImages } from '@/utils/assetUpload'
+import { createTemplate, uploadTemplatePreview } from '@/api/template'
 import { Template } from '@/types/canvas'
 import {
   createDesign,
@@ -72,6 +73,9 @@ const loadDocument = async (input: unknown) => {
   const mainStore = useMainStore()
   loadingDepth += 1
   try {
+    // Font dùng chung phải sẵn sàng trước khi vẽ, nếu không chữ bị đo bằng font dự phòng.
+    // Chờ tối đa vài giây để một font tải chậm không chặn việc mở tài liệu.
+    await Promise.race([mainStore.getOnlineFonts(), new Promise((resolve) => setTimeout(resolve, 4000))])
     if (typeof doc.meta.clip === 'number') fabricStore.clip = doc.meta.clip
     if (typeof doc.meta.safe === 'number') fabricStore.safe = doc.meta.safe
     if (typeof doc.meta.unitMode === 'number') mainStore.unitMode = doc.meta.unitMode
@@ -355,6 +359,24 @@ const restoreVersion = async (versionId: string) => {
   return true
 }
 
+/**
+ * Đăng tài liệu đang mở thành template dùng chung (chỉ staff). Ảnh nhúng được đưa lên server
+ * trước; server sẽ sao chúng thành bản riêng của template.
+ */
+const publishTemplate = async (info: { title: string, text?: string, category?: string }) => {
+  const doc = buildDocument()
+  await moveImagesToServer(doc)
+  const result = await createTemplate({ ...info, data: zip(JSON.stringify(doc)) })
+  const template = result.data.data
+  try {
+    const blob = await renderPageThumbnail(doc.pages[0], 800)
+    if (blob) await uploadTemplatePreview(template.id, blob)
+  } catch (_) {
+    // Thiếu ảnh xem trước thì staff có thể đăng lại; template vẫn dùng được.
+  }
+  return template
+}
+
 /** Tách trình chỉnh sửa khỏi thiết kế đang gắn (vd mở một template mới). */
 const detach = () => {
   scheduleSave.cancel()
@@ -408,6 +430,7 @@ export default () => ({
   rename,
   checkpoint,
   restoreVersion,
+  publishTemplate,
   detach,
   hasUnsavedChanges,
   startWatching,

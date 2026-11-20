@@ -69,6 +69,7 @@ onMounted(async () => {
   const templateId = Number(query.template) > 0 ? Number(query.template) : 0
   detach()
   startWatching()
+  mainStore.getOnlineFonts()
   // Sắp nạp một thiết kế/template từ server thì không vẽ tài liệu mẫu mặc định trước.
   initEditor(!!designId || templateId > 0)
   if (designId) {

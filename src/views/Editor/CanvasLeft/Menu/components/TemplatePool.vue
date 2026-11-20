@@ -10,7 +10,7 @@
       <el-tab-pane :label="$t('message.recommendTemp')" name="data">
         <div class="layout-templates" @scroll="handleScroll" ref="templateRef">
           <div v-for="(item, index) in templateItems" :key="item.id" class="thumbnail">
-            <img :src="item.preview + '?x-oss-process=style/img_tum'" alt="" :ref="(e: any) => setItemStyle(e, index)" @click="handleChangeTemplate(item)"/>
+            <img :src="item.preview" :alt="item.title" :title="item.title" :ref="(e: any) => setItemStyle(e, index)" @click="handleChangeTemplate(item)"/>
           </div>
         </div>
       </el-tab-pane>
@@ -28,7 +28,7 @@
 <script lang="ts" setup>
 import { Search } from "@element-plus/icons-vue"
 import { onMounted, ref } from "vue"
-import { getTemplateDetailPages } from '@/api/template'
+import { getTemplateDetailPages, getTemplateData } from '@/api/template'
 import { TemplateItem } from '@/api/template/types'
 import { useDesignStore, useTemplatesStore } from '@/store'
 import { ElMessage, ElMessageBox, ElLoading } from 'element-plus'
@@ -116,30 +116,37 @@ const handleChangeTemplate = (item: TemplateItem) => {
     }
   )
     .then(async () => {
-      const data = unzip(item.data)
       const loadingInstance = ElLoading.service({ fullscreen: true, background: 'rgba(122, 122, 122, 0.5)' })
-      if (designStore.bound) {
-        // Đang sửa một thiết kế đã lưu: template sẽ thay toàn bộ nội dung của nó, nên lưu lại
-        // trạng thái hiện tại thành một phiên bản trước để còn quay về được.
-        await checkpoint('Trước khi đổi mẫu')
+      try {
+        // Danh sách chỉ có ảnh xem trước; tài liệu của template được tải khi người dùng chọn.
+        const result = await getTemplateData(item.id)
+        const data = unzip(result.data.data.data)
+        const pages = Array.isArray(data) ? data : (Array.isArray(data.pages) ? data.pages : [data])
+        if (designStore.bound) {
+          // Đang sửa một thiết kế đã lưu: template sẽ thay toàn bộ nội dung của nó, nên lưu lại
+          // trạng thái hiện tại thành một phiên bản trước để còn quay về được.
+          await checkpoint('Trước khi đổi mẫu')
+        }
+        else {
+          router.push(`${router.currentRoute.value.path}?template=${item.id}`)
+        }
+        await templatesStore.changeTemplate(pages)
+        ElMessage({
+          type: 'success',
+          message: 'Đổi mẫu thành công',
+        })
       }
-      else {
-        router.push(`${router.currentRoute.value.path}?template=${item.id}`)
+      catch (_) {
+        ElMessage({
+          type: 'error',
+          message: 'Tải mẫu thất bại, vui lòng liên hệ quản trị viên',
+        })
       }
-      await templatesStore.changeTemplate(data)
-      nextTick(() => loadingInstance.close())
-      ElMessage({
-        type: 'success',
-        message: 'Đổi mẫu thành công',
-      })
+      finally {
+        nextTick(() => loadingInstance.close())
+      }
     })
-    .catch(() => {
-      ElMessage({
-        type: 'error',
-        message: 'Tải mẫu thất bại, vui lòng liên hệ quản trị viên',
-      })
-    })
-  
+    .catch(() => undefined) // người dùng bấm huỷ
 }
 
 onMounted(async () => {

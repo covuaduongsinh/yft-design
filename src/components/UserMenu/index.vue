@@ -16,7 +16,10 @@
           <el-dropdown-item v-if="userStore.isSuperuser" divided @click="adminVisible = true">
             Quản lý người dùng
           </el-dropdown-item>
-          <el-dropdown-item :divided="!userStore.isSuperuser" @click="passwordVisible = true">
+          <el-dropdown-item v-if="isStaff" :divided="!userStore.isSuperuser" @click="fontsVisible = true">
+            Quản lý font
+          </el-dropdown-item>
+          <el-dropdown-item :divided="!isStaff" @click="passwordVisible = true">
             Đổi mật khẩu
           </el-dropdown-item>
           <el-dropdown-item divided class="btn-logout" @click="handleLogout">
@@ -31,6 +34,7 @@
     <LoginDialog :visible="loginVisible" @close="loginVisible = false" />
     <ChangePasswordDialog v-model:visible="passwordVisible" />
     <AdminUsersDialog v-if="userStore.isSuperuser" v-model:visible="adminVisible" />
+    <FontManagerDialog v-if="isStaff" v-model:visible="fontsVisible" />
   </div>
 </template>
 
@@ -42,6 +46,7 @@ import useAuth from '@/hooks/useAuth'
 import LoginDialog from '@/components/LoginDialog/index.vue'
 import ChangePasswordDialog from './ChangePasswordDialog.vue'
 import AdminUsersDialog from './AdminUsersDialog.vue'
+import FontManagerDialog from './FontManagerDialog.vue'
 
 defineProps({
   /** Dạng thu gọn dùng trên thanh công cụ của trình chỉnh sửa. */
@@ -56,6 +61,9 @@ const { logout, refreshUser } = useAuth()
 const loginVisible = ref(false)
 const passwordVisible = ref(false)
 const adminVisible = ref(false)
+const fontsVisible = ref(false)
+// Chỉ để ẩn/hiện mục menu; quyền thật do server kiểm tra ở từng API.
+const isStaff = computed(() => userStore.isStaff || userStore.isSuperuser)
 
 const roleLabel = computed(() => userStore.isSuperuser ? 'Admin' : (userStore.isStaff ? 'Staff' : 'User'))
 const roleType = computed(() => userStore.isSuperuser ? 'danger' : (userStore.isStaff ? 'warning' : 'info'))

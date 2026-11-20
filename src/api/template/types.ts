@@ -20,6 +20,9 @@ export type ItemList = Array<ItemInfo>;
 export interface PageParams {
   page: number
   size: number
+  q?: string
+  /** Staff gửi 1 để thấy cả template đang ẩn. */
+  all?: 0 | 1
 }
 
 export interface infoParams {
@@ -31,10 +34,36 @@ export interface TemplateItem {
   preview: string
   width: number
   height: number
+  /** base64 của gzip của tài liệu; chỉ có khi lấy bằng getTemplateData. */
   data: string
   title: string
   text: string
   images?: string
+  category?: string
+  page_count?: number
+  is_published?: boolean
+  use_count?: number
+}
+
+export interface TemplateCreateData {
+  title: string
+  text?: string
+  category?: string
+  is_published?: boolean
+  data: string
+}
+
+export interface TemplateUpdateData {
+  title?: string
+  text?: string
+  category?: string
+  is_published?: boolean
+}
+
+export interface TemplateMetaResult {
+  code: number
+  data: TemplateItem
+  msg: string
 }
 
 export interface PageResult {

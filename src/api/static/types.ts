@@ -7,12 +7,20 @@ export interface FontInfo {
   id: number
   url: string
   fontname: string
+  format?: string
+  size?: number
 }
 
 export interface FontInfoResult {
   code: number
   msg: string
   data: FontInfo[]
+}
+
+export interface FontResult {
+  code: number
+  msg: string
+  data: FontInfo
 }
 
 

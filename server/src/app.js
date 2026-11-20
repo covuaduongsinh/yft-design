@@ -11,6 +11,10 @@ import { spaHandler } from './core/static.js';
 import { createStorageMeter } from './core/storage.js';
 import { designRoutes } from './designs/routes.js';
 import { createDesignService } from './designs/service.js';
+import { fontRoutes } from './fonts/routes.js';
+import { createFontService } from './fonts/service.js';
+import { templateRoutes } from './templates/routes.js';
+import { createTemplateService } from './templates/service.js';
 import { createMailer } from './auth/mailer.js';
 import { createAuthMiddleware } from './auth/middleware.js';
 import { adminUserRoutes, authRoutes } from './auth/routes.js';
@@ -48,7 +52,11 @@ export function createApp({ config, db, deps = {} }) {
     () => assets.purgeUnused(),
     () => assets.sweepOrphanFiles(),
   ];
-  const ctx = { config, db, auth, guard, limiters, mailer, deps, maintenance, media, storage, designs, assets };
+  const templates = createTemplateService({ db, config, media });
+  const fonts = createFontService({ db, config, media });
+  const ctx = {
+    config, db, auth, guard, limiters, mailer, deps, maintenance, media, storage, designs, assets, templates, fonts,
+  };
 
   const app = new Hono();
   app.onError(errorHandler);
@@ -79,10 +87,11 @@ export function createApp({ config, db, deps = {} }) {
 
   app.on(['GET', 'HEAD'], '/media/*', media.handler);
 
-  // Tạm thời: danh sách template rỗng (giống server giả lập cũ) cho tới khi có module templates.
-  app.get('/api/design/template/*', (c) =>
-    ok(c, { total: 0, page: 1, total_pages: 1, size: 20, pages: 1, items: [] }),
-  );
+  app.use('/api/design/template/*', limitBody(Math.ceil(config.maxDesignDocumentBytes * 1.4) + MiB));
+  app.route('/api/design/template', templateRoutes(ctx));
+
+  app.use('/api/design/font/*', limitBody(config.maxFontBytes + MiB));
+  app.route('/api/design/font', fontRoutes(ctx));
 
   if (config.staticDir && fs.existsSync(config.staticDir)) {
     const spa = spaHandler(config.staticDir);

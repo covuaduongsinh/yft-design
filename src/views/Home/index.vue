@@ -61,6 +61,15 @@
                 <img class="pic" :src="item.preview" alt="" :ref="(e: any) => setItemStyle(e, index)" @click="changeTemplate(item.id)">
                 <div class="title">{{ item.title }}</div>
                 <div class="content ellipsis_2">{{ item.text }}</div>
+                <!-- Quản lý mẫu: chỉ hiện với staff, quyền thật do server kiểm tra. -->
+                <div v-if="isStaff" class="staff-actions">
+                  <el-tag v-if="item.is_published === false" size="small" type="info">Đang ẩn</el-tag>
+                  <span v-else class="text-[12px] text-[#9da3ac]">{{ item.use_count || 0 }} lượt dùng</span>
+                  <span>
+                    <el-button link size="small" type="primary" @click="togglePublished(item)">{{ item.is_published === false ? 'Hiện' : 'Ẩn' }}</el-button>
+                    <el-button link size="small" type="danger" @click="removeTemplate(item)">Xoá</el-button>
+                  </span>
+                </div>
               </div>
             </TransitionGroup>
           </div>
@@ -74,7 +83,9 @@
 import MainSearch from './components/MainSearch.vue';
 import MainScene from './components/MainScene.vue';
 import MainTools from './components/MainTools.vue';
-import { getTemplateInfoPages } from '@/api/template'
+import { getTemplateInfoPages, updateTemplate, deleteTemplate } from '@/api/template'
+import { useUserStore } from '@/store'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { TemplateItem } from '@/api/template/types'
 import { throttle } from 'lodash-es'
 import { PageSize } from "@/configs/size"
@@ -140,16 +151,54 @@ const loadTemplateImage = async () => {
   })
 }
 
+const userStore = useUserStore()
+const isStaff = computed(() => userStore.loginStatus && (userStore.isStaff || userStore.isSuperuser))
+
 const getTemplateItems = async () => {
-  const pageParams = { page: resultReactive.page, size: PageSize }
-  const result = await getTemplateInfoPages(pageParams)
-  if (result.data && result.data.code === 200) {
+  // Staff thấy cả mẫu đang ẩn để quản lý.
+  const pageParams = { page: resultReactive.page, size: PageSize, all: isStaff.value ? 1 as const : undefined }
+  try {
+    const result = await getTemplateInfoPages(pageParams)
     resultReactive.page = result.data.data.page
     resultReactive.totalPage = result.data.data.total_pages
     resultReactive.items = resultReactive.items.concat(result.data.data.items)
-    // await loadTemplateImage()
+  } catch (_) {
+    // request.ts đã hiện thông báo lỗi
   }
 }
+
+const reloadTemplates = async () => {
+  resultReactive.page = 1
+  resultReactive.items = []
+  await getTemplateItems()
+}
+
+const togglePublished = async (item: TemplateItem) => {
+  try {
+    const result = await updateTemplate(item.id, { is_published: item.is_published === false })
+    item.is_published = result.data.data.is_published
+  } catch (_) {
+    // request.ts đã hiện thông báo lỗi
+  }
+}
+
+const removeTemplate = async (item: TemplateItem) => {
+  try {
+    await ElMessageBox.confirm(`Xoá mẫu "${item.title}"? Thiết kế đã tạo từ mẫu này không bị ảnh hưởng.`, 'Xoá mẫu', {
+      confirmButtonText: 'Xoá',
+      cancelButtonText: 'Huỷ',
+      type: 'warning',
+    })
+    await deleteTemplate(item.id)
+    resultReactive.items = resultReactive.items.filter((template) => template.id !== item.id)
+    ElMessage.success('Đã xoá mẫu')
+  } catch (_) {
+    // Người dùng bấm huỷ, hoặc lỗi đã được thông báo.
+  }
+}
+
+// Đăng nhập/đăng xuất làm đổi quyền xem mẫu ẩn: tải lại danh sách.
+watch(isStaff, reloadTemplates)
 
 const changeTemplate = (pk: number) => {
   const { href } = router.resolve({
@@ -264,6 +313,14 @@ onUnmounted(() => {
       color: #222;
       line-height: 20px;
       height: 40px;
+    }
+    .staff-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid $borderColor;
     }
   }
 }

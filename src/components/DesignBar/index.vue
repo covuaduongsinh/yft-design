@@ -6,20 +6,27 @@
     <span class="design-status" :class="designStore.status" :title="designStore.errorMessage">{{ statusText }}</span>
     <el-button size="small" type="primary" plain :loading="designStore.status === 'saving'" @click="saveNow">Lưu</el-button>
     <el-button v-if="designStore.bound" size="small" text @click="versionsVisible = true">Lịch sử</el-button>
+    <el-button v-if="canPublish" size="small" text @click="publishVisible = true">Đăng mẫu</el-button>
     <DesignVersions v-if="designStore.bound" v-model:visible="versionsVisible" />
+    <PublishTemplate v-if="canPublish" v-model:visible="publishVisible" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { ElMessageBox } from 'element-plus'
-import { useDesignStore } from '@/store'
+import { useDesignStore, useUserStore } from '@/store'
 import useDesign, { DEFAULT_DESIGN_TITLE } from '@/hooks/useDesign'
 import DesignVersions from './DesignVersions.vue'
+import PublishTemplate from './PublishTemplate.vue'
 
 const designStore = useDesignStore()
+const userStore = useUserStore()
 const { saveNow, rename } = useDesign()
 const versionsVisible = ref(false)
+const publishVisible = ref(false)
+// Nút chỉ để tiện cho staff; quyền thật do server kiểm tra khi đăng.
+const canPublish = computed(() => userStore.loginStatus && (userStore.isStaff || userStore.isSuperuser))
 
 const statusText = computed(() => {
   switch (designStore.status) {
